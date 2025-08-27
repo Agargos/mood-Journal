@@ -20,6 +20,7 @@ export type Database = {
           id: number
           score: number | null
           sentiment: string | null
+          tags: string[] | null
           text: string
           user_id: string
         }
@@ -28,6 +29,7 @@ export type Database = {
           id?: number
           score?: number | null
           sentiment?: string | null
+          tags?: string[] | null
           text: string
           user_id: string
         }
@@ -36,6 +38,7 @@ export type Database = {
           id?: number
           score?: number | null
           sentiment?: string | null
+          tags?: string[] | null
           text?: string
           user_id?: string
         }
@@ -44,22 +47,28 @@ export type Database = {
       profiles: {
         Row: {
           created_at: string
+          current_streak: number | null
           display_name: string | null
           id: string
+          last_entry_date: string | null
           updated_at: string
           user_id: string
         }
         Insert: {
           created_at?: string
+          current_streak?: number | null
           display_name?: string | null
           id?: string
+          last_entry_date?: string | null
           updated_at?: string
           user_id: string
         }
         Update: {
           created_at?: string
+          current_streak?: number | null
           display_name?: string | null
           id?: string
+          last_entry_date?: string | null
           updated_at?: string
           user_id?: string
         }

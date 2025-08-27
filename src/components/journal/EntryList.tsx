@@ -1,10 +1,17 @@
+import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useJournalEntries, JournalEntry } from '@/hooks/useJournalEntries';
-import { Clock, FileText } from 'lucide-react';
+import { Clock, FileText, Filter, X } from 'lucide-react';
 
 export const EntryList = () => {
-  const { entries, loading } = useJournalEntries();
+  const { entries, loading, getFilteredEntries, getAllTags } = useJournalEntries();
+  const [selectedTag, setSelectedTag] = useState<string>('');
+  
+  const filteredEntries = getFilteredEntries(selectedTag);
+  const availableTags = getAllTags();
 
   const getSentimentColor = (sentiment: string | null) => {
     switch (sentiment) {
@@ -77,15 +84,44 @@ export const EntryList = () => {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <FileText className="h-5 w-5" />
-          Journal History
+          Journal History ({filteredEntries.length})
         </CardTitle>
         <CardDescription>
           {entries.length} {entries.length === 1 ? 'entry' : 'entries'} total
+          {selectedTag && ` • Filtered by "${selectedTag}"`}
         </CardDescription>
+        {availableTags.length > 0 && (
+          <div className="flex items-center gap-2 mt-2">
+            <Filter className="h-4 w-4 text-muted-foreground" />
+            <Select value={selectedTag} onValueChange={setSelectedTag}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Filter by tag" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">All entries</SelectItem>
+                {availableTags.map((tag) => (
+                  <SelectItem key={tag} value={tag}>
+                    {tag}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {selectedTag && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setSelectedTag('')}
+                className="h-8 px-2"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            )}
+          </div>
+        )}
       </CardHeader>
       <CardContent>
         <div className="space-y-4 max-h-[400px] overflow-y-auto">
-          {entries.map((entry: JournalEntry) => (
+          {filteredEntries.map((entry: JournalEntry) => (
             <div key={entry.id} className="border rounded-lg p-4 hover:bg-muted/50 transition-colors">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1 min-w-0">
@@ -111,10 +147,24 @@ export const EntryList = () => {
                       : entry.text
                     }
                   </p>
+                  {entry.tags && entry.tags.length > 0 && (
+                    <div className="flex gap-1 flex-wrap mt-2">
+                      {entry.tags.map((tag) => (
+                        <Badge key={tag} variant="outline" className="text-xs">
+                          {tag}
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
           ))}
+          {filteredEntries.length === 0 && selectedTag && (
+            <div className="text-center text-sm text-muted-foreground py-8">
+              No entries found with tag "{selectedTag}"
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>

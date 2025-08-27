@@ -8,6 +8,7 @@ export interface JournalEntry {
   text: string;
   sentiment: string | null;
   score: number | null;
+  tags: string[] | null;
   created_at: string;
 }
 
@@ -42,12 +43,13 @@ export const useJournalEntries = () => {
     }
   }, [user]);
 
-  const createEntry = async (text: string) => {
+  const createEntry = async (text: string, tags: string[] = []) => {
     if (!user) throw new Error('User not authenticated');
 
     const { data, error } = await supabase.functions.invoke('analyze-sentiment', {
       body: {
         text,
+        tags,
         user_id: user.id
       }
     });
@@ -61,10 +63,29 @@ export const useJournalEntries = () => {
     return data;
   };
 
+  const getFilteredEntries = (tagFilter?: string) => {
+    if (!tagFilter) return entries;
+    return entries.filter(entry => 
+      entry.tags && entry.tags.includes(tagFilter)
+    );
+  };
+
+  const getAllTags = () => {
+    const allTags = new Set<string>();
+    entries.forEach(entry => {
+      if (entry.tags) {
+        entry.tags.forEach(tag => allTags.add(tag));
+      }
+    });
+    return Array.from(allTags).sort();
+  };
+
   return {
     entries,
     loading,
     createEntry,
+    getFilteredEntries,
+    getAllTags,
     refetch: fetchEntries
   };
 };

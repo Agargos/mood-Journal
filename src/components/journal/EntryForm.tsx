@@ -3,13 +3,20 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useJournalEntries } from '@/hooks/useJournalEntries';
+import { useStreaks } from '@/hooks/useStreaks';
+import { useMotivationalQuotes } from '@/hooks/useMotivationalQuotes';
 import { useToast } from '@/hooks/use-toast';
+import { TagInput } from '@/components/ui/tag-input';
+import { MotivationalQuote } from '@/components/quotes/MotivationalQuote';
 import { Brain, Loader2 } from 'lucide-react';
 
 export const EntryForm = () => {
   const [text, setText] = useState('');
+  const [tags, setTags] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const { createEntry } = useJournalEntries();
+  const { updateStreak } = useStreaks();
+  const { generateQuote, quote } = useMotivationalQuotes();
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -18,8 +25,13 @@ export const EntryForm = () => {
 
     setLoading(true);
     try {
-      await createEntry(text);
+      await createEntry(text, tags);
+      await updateStreak();
+      const motivationalQuote = await generateQuote();
+      
       setText('');
+      setTags([]);
+      
       toast({
         title: 'Entry Saved!',
         description: 'Your journal entry has been analyzed and saved.',
@@ -36,35 +48,47 @@ export const EntryForm = () => {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Brain className="h-5 w-5" />
-          New Journal Entry
-        </CardTitle>
-        <CardDescription>
-          Write about your day, thoughts, or feelings. Our AI will analyze the sentiment of your entry.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <Textarea
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            placeholder="How are you feeling today? What's on your mind?"
-            className="min-h-[120px]"
-            disabled={loading}
-          />
-          <Button 
-            type="submit" 
-            disabled={loading || !text.trim()}
-            className="w-full"
-          >
-            {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {loading ? 'Analyzing & Saving...' : 'Analyze & Save Entry'}
-          </Button>
-        </form>
-      </CardContent>
-    </Card>
+    <div className="space-y-4">
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Brain className="h-5 w-5" />
+            New Journal Entry
+          </CardTitle>
+          <CardDescription>
+            Write about your day, thoughts, or feelings. Our AI will analyze the sentiment of your entry.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <Textarea
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              placeholder="How are you feeling today? What's on your mind?"
+              className="min-h-[120px]"
+              disabled={loading}
+            />
+            <div>
+              <label className="text-sm font-medium mb-2 block">Tags (optional)</label>
+              <TagInput
+                value={tags}
+                onChange={setTags}
+                placeholder="Add tags like 'work', 'family', 'health'..."
+              />
+            </div>
+            <Button 
+              type="submit" 
+              disabled={loading || !text.trim()}
+              className="w-full"
+            >
+              {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {loading ? 'Analyzing & Saving...' : 'Analyze & Save Entry'}
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+      
+      {quote && <MotivationalQuote quote={quote} />}
+    </div>
   );
 };

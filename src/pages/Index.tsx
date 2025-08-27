@@ -5,6 +5,8 @@ import { EntryForm } from '@/components/journal/EntryForm';
 import { MoodChart } from '@/components/dashboard/MoodChart';
 import { EntryList } from '@/components/journal/EntryList';
 import { StatsCards } from '@/components/dashboard/StatsCards';
+import { StreakCounter } from '@/components/gamification/StreakCounter';
+import { ExportButtons } from '@/components/export/ExportButtons';
 
 const Index = () => {
   const { user, loading } = useAuth();
@@ -38,15 +40,17 @@ const Index = () => {
           <StatsCards />
 
           {/* Main Content Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Left Column */}
-            <div className="space-y-6">
+            <div className="lg:col-span-2 space-y-6">
               <EntryForm />
               <EntryList />
             </div>
             
             {/* Right Column */}
             <div className="space-y-6">
+              <StreakCounter />
+              <ExportButtons />
               <MoodChart />
             </div>
           </div>

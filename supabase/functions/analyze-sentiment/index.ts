@@ -18,7 +18,7 @@ serve(async (req) => {
   }
 
   try {
-    const { text, user_id } = await req.json();
+    const { text, tags = [], user_id } = await req.json();
     
     if (!text) {
       return new Response(
@@ -75,6 +75,7 @@ serve(async (req) => {
       .insert({
         user_id,
         text,
+        tags: tags.length > 0 ? tags : null,
         sentiment,
         score
       })
