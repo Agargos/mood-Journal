@@ -46,7 +46,40 @@ serve(async (req) => {
     );
 
     if (!huggingFaceResponse.ok) {
-      throw new Error(`Hugging Face API error: ${huggingFaceResponse.status}`);
+      console.error('Hugging Face API error:', huggingFaceResponse.status, await huggingFaceResponse.text());
+      // Fallback to neutral sentiment if API fails
+      const supabase = createClient(
+        Deno.env.get('SUPABASE_URL') ?? '',
+        Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+      );
+
+      const { data, error } = await supabase
+        .from('journal_entries')
+        .insert({
+          user_id,
+          text,
+          tags: tags.length > 0 ? tags : null,
+          sentiment: 'NEUTRAL',
+          score: 0.5
+        })
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Database error:', error);
+        throw new Error(`Database error: ${error.message}`);
+      }
+
+      return new Response(
+        JSON.stringify({
+          success: true,
+          entry: data,
+          sentiment: 'NEUTRAL',
+          score: 0.5,
+          note: 'Sentiment analysis unavailable, entry saved with neutral sentiment'
+        }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
     const sentimentData = await huggingFaceResponse.json();
