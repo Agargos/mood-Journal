@@ -9,6 +9,8 @@ export interface JournalEntry {
   sentiment: string | null;
   score: number | null;
   tags: string[] | null;
+  emotions?: string[];
+  coping_strategy?: string;
   created_at: string;
 }
 
@@ -46,7 +48,7 @@ export const useJournalEntries = () => {
   const createEntry = async (text: string, tags: string[] = []) => {
     if (!user) throw new Error('User not authenticated');
 
-    const { data, error } = await supabase.functions.invoke('analyze-sentiment', {
+    const { data, error } = await supabase.functions.invoke('analyze-sentiment-enhanced', {
       body: {
         text,
         tags,

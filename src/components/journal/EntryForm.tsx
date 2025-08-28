@@ -8,12 +8,14 @@ import { useMotivationalQuotes } from '@/hooks/useMotivationalQuotes';
 import { useToast } from '@/hooks/use-toast';
 import { TagInput } from '@/components/ui/tag-input';
 import { MotivationalQuote } from '@/components/quotes/MotivationalQuote';
+import { CopingStrategy } from '@/components/coping/CopingStrategy';
 import { Brain, Loader2 } from 'lucide-react';
 
 export const EntryForm = () => {
   const [text, setText] = useState('');
   const [tags, setTags] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
+  const [lastEntryResult, setLastEntryResult] = useState<any>(null);
   const { createEntry } = useJournalEntries();
   const { updateStreak } = useStreaks();
   const { generateQuote, quote } = useMotivationalQuotes();
@@ -25,16 +27,18 @@ export const EntryForm = () => {
 
     setLoading(true);
     try {
-      await createEntry(text, tags);
+      const result = await createEntry(text, tags);
+      setLastEntryResult(result);
+      
       await updateStreak();
-      const motivationalQuote = await generateQuote();
+      await generateQuote();
       
       setText('');
       setTags([]);
       
       toast({
         title: 'Entry Saved!',
-        description: 'Your journal entry has been analyzed and saved.',
+        description: result.message || 'Your journal entry has been analyzed and saved.',
       });
     } catch (error) {
       toast({
@@ -89,6 +93,19 @@ export const EntryForm = () => {
       </Card>
       
       {quote && <MotivationalQuote quote={quote} />}
+      
+      {lastEntryResult?.copingStrategy && lastEntryResult?.emotions && (
+        <CopingStrategy 
+          strategy={lastEntryResult.copingStrategy}
+          emotions={lastEntryResult.emotions}
+          onMarkCompleted={() => {
+            toast({
+              title: "Well done!",
+              description: "You're taking great care of your mental health.",
+            });
+          }}
+        />
+      )}
     </div>
   );
 };
