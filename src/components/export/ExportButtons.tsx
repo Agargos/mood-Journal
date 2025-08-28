@@ -1,15 +1,26 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Download, FileText, FileSpreadsheet } from "lucide-react";
+import { Download, FileText, FileSpreadsheet, Crown } from "lucide-react";
 import { useExport } from "@/hooks/useExport";
 import { useToast } from "@/hooks/use-toast";
+import { usePremium } from "@/hooks/usePremium";
 
 export const ExportButtons = () => {
   const { loading, exportToCSV, exportToPDF } = useExport();
   const { toast } = useToast();
+  const { isPremium } = usePremium();
 
   const handleExportCSV = async () => {
+    if (!isPremium) {
+      toast({
+        title: "Premium Feature",
+        description: "Please upgrade to Premium to export your journal entries.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       await exportToCSV();
       toast({
@@ -26,6 +37,15 @@ export const ExportButtons = () => {
   };
 
   const handleExportPDF = async () => {
+    if (!isPremium) {
+      toast({
+        title: "Premium Feature",
+        description: "Please upgrade to Premium to export your journal entries.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       await exportToPDF();
       toast({
@@ -47,6 +67,7 @@ export const ExportButtons = () => {
         <CardTitle className="flex items-center gap-2">
           <Download className="h-5 w-5" />
           Export Your Data
+          {!isPremium && <Crown className="h-4 w-4 text-primary" />}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
@@ -58,7 +79,7 @@ export const ExportButtons = () => {
             variant="outline"
             size="sm"
             onClick={handleExportCSV}
-            disabled={loading}
+            disabled={loading || !isPremium}
             className="flex items-center gap-2"
           >
             <FileSpreadsheet className="h-4 w-4" />
@@ -68,13 +89,18 @@ export const ExportButtons = () => {
             variant="outline" 
             size="sm"
             onClick={handleExportPDF}
-            disabled={loading}
+            disabled={loading || !isPremium}
             className="flex items-center gap-2"
           >
             <FileText className="h-4 w-4" />
             PDF
           </Button>
         </div>
+        {!isPremium && (
+          <p className="text-xs text-muted-foreground">
+            Upgrade to Premium to export your data
+          </p>
+        )}
       </CardContent>
     </Card>
   );

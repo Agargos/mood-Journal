@@ -7,9 +7,16 @@ import { EntryList } from '@/components/journal/EntryList';
 import { StatsCards } from '@/components/dashboard/StatsCards';
 import { StreakCounter } from '@/components/gamification/StreakCounter';
 import { ExportButtons } from '@/components/export/ExportButtons';
+import { PremiumUpgrade } from '@/components/premium/PremiumUpgrade';
+import { MotivationalQuote } from '@/components/quotes/MotivationalQuote';
+import { useMotivationalQuotes } from '@/hooks/useMotivationalQuotes';
+import { usePremium } from '@/hooks/usePremium';
+import { FlutterwaveScript } from '@/components/premium/FlutterwaveScript';
 
 const Index = () => {
   const { user, loading } = useAuth();
+  const { isPremium } = usePremium();
+  const { quote } = useMotivationalQuotes();
 
   if (loading) {
     return (
@@ -25,6 +32,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <FlutterwaveScript />
       <Navigation />
       <div className="max-w-6xl mx-auto p-6">
         <div className="space-y-6">
@@ -50,6 +58,10 @@ const Index = () => {
             {/* Right Column */}
             <div className="space-y-6">
               <StreakCounter />
+              {!isPremium && <PremiumUpgrade />}
+              {isPremium && quote && (
+                <MotivationalQuote quote={quote} />
+              )}
               <ExportButtons />
               <MoodChart />
             </div>
