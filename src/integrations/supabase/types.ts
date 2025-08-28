@@ -51,6 +51,7 @@ export type Database = {
           display_name: string | null
           id: string
           last_entry_date: string | null
+          premium: boolean | null
           updated_at: string
           user_id: string
         }
@@ -60,6 +61,7 @@ export type Database = {
           display_name?: string | null
           id?: string
           last_entry_date?: string | null
+          premium?: boolean | null
           updated_at?: string
           user_id: string
         }
@@ -69,6 +71,7 @@ export type Database = {
           display_name?: string | null
           id?: string
           last_entry_date?: string | null
+          premium?: boolean | null
           updated_at?: string
           user_id?: string
         }
