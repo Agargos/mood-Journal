@@ -52,14 +52,23 @@ export const useAuth = () => {
   };
 
   const signOut = async () => {
-    setLoading(true);
-    const { error } = await supabase.auth.signOut();
-    if (!error) {
+    try {
+      // Clear local state first
       setUser(null);
       setSession(null);
+      
+      // Then attempt to sign out from Supabase
+      await supabase.auth.signOut();
+      
+      // Force page reload to ensure clean state
+      window.location.reload();
+    } catch (error) {
+      console.error('Sign out error:', error);
+      // Even if sign out fails, clear local state and reload
+      setUser(null);
+      setSession(null);
+      window.location.reload();
     }
-    setLoading(false);
-    return { error };
   };
 
   return {

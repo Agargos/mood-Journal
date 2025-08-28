@@ -19,13 +19,23 @@ export const PremiumUpgrade = () => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
 
-  const handlePayment = () => {
+  const handlePayment = async () => {
     if (!user) return;
 
     setLoading(true);
 
-    const modal = window.FlutterwaveCheckout({
-      public_key: "FLWPUBK_TEST-b1b19b35e6ab0c7f51e15a9e81ad5fba-X", // Flutterwave test public key
+    try {
+      // Get the Flutterwave public key from edge function
+      const { data: keyData, error: keyError } = await supabase.functions.invoke(
+        'get-flutterwave-key'
+      );
+
+      if (keyError || !keyData?.publicKey) {
+        throw new Error('Failed to get payment configuration');
+      }
+
+      const modal = window.FlutterwaveCheckout({
+        public_key: keyData.publicKey,
       tx_ref: `premium_${user.id}_${Date.now()}`,
       amount: 50, // GHS 50
       currency: "GHS",
@@ -83,6 +93,15 @@ export const PremiumUpgrade = () => {
         setLoading(false);
       },
     });
+    } catch (error) {
+      console.error('Payment initialization error:', error);
+      toast({
+        title: "Payment Error",
+        description: "Failed to initialize payment. Please try again.",
+        variant: "destructive",
+      });
+      setLoading(false);
+    }
   };
 
   if (isPremium) {
