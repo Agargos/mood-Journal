@@ -80,8 +80,8 @@ export const useStreaks = () => {
         .from('journal_entries')
         .select('id')
         .eq('user_id', user.id)
-        .gte('created_at', today + 'T00:00:00')
-        .lt('created_at', today + 'T23:59:59')
+        .gte('created_at', today + 'T00:00:00.000Z')
+        .lte('created_at', today + 'T23:59:59.999Z')
         .limit(1);
 
       // If this is the first entry today, update streak
@@ -94,12 +94,15 @@ export const useStreaks = () => {
 
         let newStreak = 1;
         if (profile?.last_entry_date) {
-          const lastEntry = new Date(profile.last_entry_date);
+          const lastEntryDate = new Date(profile.last_entry_date);
           const yesterday = new Date();
           yesterday.setDate(yesterday.getDate() - 1);
           
+          const lastEntryString = lastEntryDate.toISOString().split('T')[0];
+          const yesterdayString = yesterday.toISOString().split('T')[0];
+          
           // If last entry was yesterday, increment streak
-          if (lastEntry.toISOString().split('T')[0] === yesterday.toISOString().split('T')[0]) {
+          if (lastEntryString === yesterdayString) {
             newStreak = (profile.current_streak || 0) + 1;
           }
         }
