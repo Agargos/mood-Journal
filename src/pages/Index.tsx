@@ -2,7 +2,8 @@ import { useAuth } from '@/hooks/useAuth';
 import { AuthPage } from '@/components/auth/AuthPage';
 import { Navigation } from '@/components/layout/Navigation';
 import { EntryForm } from '@/components/journal/EntryForm';
-import { MoodChart } from '@/components/dashboard/MoodChart';
+import { EnhancedMoodChart } from '@/components/dashboard/EnhancedMoodChart';
+import { EmotionInsights } from '@/components/dashboard/EmotionInsights';
 import { EntryList } from '@/components/journal/EntryList';
 import { StatsCards } from '@/components/dashboard/StatsCards';
 import { StreakCounter } from '@/components/gamification/StreakCounter';
@@ -76,7 +77,8 @@ const Index = () => {
                 <MotivationalQuote quote={quote} />
               )}
               <ExportButtons />
-              <MoodChart />
+              <EnhancedMoodChart />
+              <EmotionInsights />
             </div>
           </div>
         </div>
