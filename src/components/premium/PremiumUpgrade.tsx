@@ -25,7 +25,7 @@ export const PremiumUpgrade = () => {
     setLoading(true);
 
     const modal = window.FlutterwaveCheckout({
-      public_key: "FLWPUBK_TEST-SANDBOXDEMOKEY-X", // This will be replaced with actual key
+      public_key: "FLWPUBK_TEST-b1b19b35e6ab0c7f51e15a9e81ad5fba-X", // Flutterwave test public key
       tx_ref: `premium_${user.id}_${Date.now()}`,
       amount: 50, // GHS 50
       currency: "GHS",
