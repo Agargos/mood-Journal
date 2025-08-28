@@ -8,9 +8,9 @@ import { Clock, FileText, Filter, X } from 'lucide-react';
 
 export const EntryList = () => {
   const { entries, loading, getFilteredEntries, getAllTags } = useJournalEntries();
-  const [selectedTag, setSelectedTag] = useState<string>('');
+  const [selectedTag, setSelectedTag] = useState<string>('all');
   
-  const filteredEntries = getFilteredEntries(selectedTag);
+  const filteredEntries = getFilteredEntries(selectedTag === 'all' ? undefined : selectedTag);
   const availableTags = getAllTags();
 
   const getSentimentColor = (sentiment: string | null) => {
@@ -88,7 +88,7 @@ export const EntryList = () => {
         </CardTitle>
         <CardDescription>
           {entries.length} {entries.length === 1 ? 'entry' : 'entries'} total
-          {selectedTag && ` • Filtered by "${selectedTag}"`}
+          {selectedTag && selectedTag !== 'all' && ` • Filtered by "${selectedTag}"`}
         </CardDescription>
         {availableTags.length > 0 && (
           <div className="flex items-center gap-2 mt-2">
@@ -98,7 +98,7 @@ export const EntryList = () => {
                 <SelectValue placeholder="Filter by tag" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All entries</SelectItem>
+                <SelectItem value="all">All entries</SelectItem>
                 {availableTags.map((tag) => (
                   <SelectItem key={tag} value={tag}>
                     {tag}
@@ -106,11 +106,11 @@ export const EntryList = () => {
                 ))}
               </SelectContent>
             </Select>
-            {selectedTag && (
+            {selectedTag && selectedTag !== 'all' && (
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => setSelectedTag('')}
+                onClick={() => setSelectedTag('all')}
                 className="h-8 px-2"
               >
                 <X className="h-4 w-4" />
