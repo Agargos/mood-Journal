@@ -12,11 +12,24 @@ import { MotivationalQuote } from '@/components/quotes/MotivationalQuote';
 import { useMotivationalQuotes } from '@/hooks/useMotivationalQuotes';
 import { usePremium } from '@/hooks/usePremium';
 import { FlutterwaveScript } from '@/components/premium/FlutterwaveScript';
+import { useEffect } from 'react';
 
 const Index = () => {
   const { user, loading } = useAuth();
   const { isPremium } = usePremium();
   const { quote } = useMotivationalQuotes();
+
+  // Ensure Flutterwave script loads early
+  useEffect(() => {
+    if (!window.FlutterwaveCheckout) {
+      const script = document.createElement('script');
+      script.src = 'https://checkout.flutterwave.com/v3.js';
+      script.async = true;
+      script.onload = () => console.log('Flutterwave script loaded');
+      script.onerror = (error) => console.error('Failed to load Flutterwave script:', error);
+      document.head.appendChild(script);
+    }
+  }, []);
 
   if (loading) {
     return (

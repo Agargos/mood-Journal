@@ -7,6 +7,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { ThemeToggle } from '@/components/ui/theme-toggle';
 
 export const Navigation = () => {
   const { user, signOut } = useAuth();
@@ -29,6 +30,7 @@ export const Navigation = () => {
           </div>
 
           <div className="flex items-center gap-4">
+            <ThemeToggle />
             {user && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
