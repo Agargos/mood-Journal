@@ -8,24 +8,24 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Light mode - Turquoise theme */
-    --background: 0 0% 100%;
-    --foreground: 0 0% 3.9%;
+    /* Light mode - Warm beige theme with turquoise accents */
+    --background: 30 25% 88%;
+    --foreground: 25 15% 25%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 3.9%;
+    --card: 30 30% 92%;
+    --card-foreground: 25 15% 25%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 3.9%;
+    --popover: 30 30% 92%;
+    --popover-foreground: 25 15% 25%;
 
     --primary: 180 100% 50%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 180 30% 96%;
-    --secondary-foreground: 0 0% 9%;
+    --secondary: 30 20% 85%;
+    --secondary-foreground: 25 15% 25%;
 
-    --muted: 180 30% 96%;
-    --muted-foreground: 0 0% 45%;
+    --muted: 30 15% 80%;
+    --muted-foreground: 25 10% 45%;
 
     --accent: 180 100% 50%;
     --accent-foreground: 0 0% 100%;
@@ -33,20 +33,20 @@ All colors MUST be HSL.
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 180 30% 90%;
-    --input: 180 30% 90%;
+    --border: 30 15% 75%;
+    --input: 30 20% 85%;
     --ring: 180 100% 50%;
 
     /* Turquoise theme colors */
     --mood-turquoise: 180 100% 50%;
     --mood-turquoise-light: 180 100% 60%;
     --mood-turquoise-dark: 180 100% 40%;
-    --mood-light: 0 0% 100%;
-    --mood-card: 0 0% 100%;
+    --mood-light: 30 25% 88%;
+    --mood-card: 30 30% 92%;
     
     /* Gradients */
     --gradient-primary: linear-gradient(135deg, hsl(var(--mood-turquoise)), hsl(var(--mood-turquoise-light)));
-    --gradient-card: linear-gradient(145deg, hsl(0 0% 100%), hsl(180 30% 96%));
+    --gradient-card: linear-gradient(145deg, hsl(30 30% 92%), hsl(30 20% 85%));
     
     /* Shadows */
     --shadow-card: 0 4px 20px -2px hsl(var(--mood-turquoise) / 0.2);
