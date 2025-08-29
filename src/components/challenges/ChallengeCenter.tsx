@@ -48,6 +48,35 @@ export const ChallengeCenter = () => {
     return `${Math.round(days / 30)} month${days > 30 ? 's' : ''}`;
   };
 
+  const getParticipationInstructions = (challenge: Challenge) => {
+    switch (challenge.type) {
+      case 'daily':
+        if (challenge.title.toLowerCase().includes('gratitude')) {
+          return "Write a journal entry each day about something you're grateful for. Your progress updates automatically when you create entries!";
+        }
+        return `Create a journal entry each day for ${challenge.duration_days} days. Progress updates automatically when you journal!`;
+      case 'streak':
+        return `Journal consistently for ${challenge.target_value} days in a row. Missing a day will reset your streak.`;
+      case 'count':
+        return `Create ${challenge.target_value} journal entries within ${challenge.duration_days} days.`;
+      case 'weekly':
+        return `Journal ${challenge.target_value} times each week for ${Math.round(challenge.duration_days / 7)} weeks.`;
+      default:
+        return "Participate by creating journal entries regularly!";
+    }
+  };
+
+  const getProgressMessage = (challenge: Challenge, userChallenge: UserChallenge) => {
+    const remaining = challenge.target_value - userChallenge.progress;
+    if (challenge.type === 'daily' && challenge.title.toLowerCase().includes('gratitude')) {
+      return `${remaining} more days of gratitude journaling to complete this challenge!`;
+    }
+    if (challenge.type === 'streak') {
+      return `Current streak: ${userChallenge.streak_count} days. Keep journaling daily to maintain your streak!`;
+    }
+    return `${remaining} more entries needed to complete this challenge!`;
+  };
+
   const ChallengeCard = ({ challenge, userChallenge }: { challenge: Challenge; userChallenge?: UserChallenge }) => {
     const isUserChallenge = !!userChallenge;
     const progressPercentage = isUserChallenge 
@@ -72,6 +101,26 @@ export const ChallengeCenter = () => {
         </CardHeader>
         
         <CardContent className="space-y-4">
+          {/* How to participate section */}
+          {!isUserChallenge && (
+            <div className="bg-muted/50 rounded-lg p-3 text-sm">
+              <p className="font-medium text-muted-foreground mb-1">How to participate:</p>
+              <p className="text-muted-foreground">
+                {getParticipationInstructions(challenge)}
+              </p>
+            </div>
+          )}
+          
+          {/* Progress tracking for active challenges */}
+          {isUserChallenge && userChallenge.status === 'active' && (
+            <div className="bg-primary/5 rounded-lg p-3 text-sm">
+              <p className="font-medium text-primary mb-1">Keep going!</p>
+              <p className="text-muted-foreground">
+                {getProgressMessage(challenge, userChallenge)}
+              </p>
+            </div>
+          )}
+
           <div className="flex flex-wrap gap-2">
             <Badge variant="outline" className={getDifficultyColor(challenge.difficulty)}>
               {challenge.difficulty}
