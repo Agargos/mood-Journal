@@ -249,16 +249,7 @@ export type Database = {
       }
     }
     Views: {
-      user_stats_safe: {
-        Row: {
-          avg_mood_score: number | null
-          first_entry_date: string | null
-          last_entry_date: string | null
-          total_entries: number | null
-          user_id: string | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       check_rate_limit: {
@@ -272,6 +263,15 @@ export type Database = {
       get_current_user_id: {
         Args: Record<PropertyKey, never>
         Returns: string
+      }
+      get_user_stats: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          avg_mood_score: number
+          first_entry_date: string
+          last_entry_date: string
+          total_entries: number
+        }[]
       }
       is_user_owner: {
         Args: { user_id: string }

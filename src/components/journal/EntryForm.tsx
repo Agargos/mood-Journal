@@ -10,6 +10,7 @@ import { TagInput } from '@/components/ui/tag-input';
 import { MotivationalQuote } from '@/components/quotes/MotivationalQuote';
 import { CopingStrategy } from '@/components/coping/CopingStrategy';
 import { useChallenges } from '@/hooks/useChallenges';
+import { useSecureInput } from '@/hooks/useSecurity';
 import { Brain, Loader2 } from 'lucide-react';
 
 export const EntryForm = () => {
@@ -22,14 +23,38 @@ export const EntryForm = () => {
   const { generateQuote, quote } = useMotivationalQuotes();
   const { toast } = useToast();
   const { updateChallengeProgress, getActiveChallenges } = useChallenges();
+  const { sanitizeText, checkRateLimit } = useSecureInput();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!text.trim()) return;
 
+    // Security: Check rate limiting for journal entries
+    const canProceed = await checkRateLimit('create_journal_entry', 20); // Max 20 entries per hour
+    if (!canProceed) {
+      toast({
+        title: "Rate limit exceeded",
+        description: "Please wait before creating another journal entry.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setLoading(true);
     try {
-      const result = await createEntry(text, tags);
+      // Security: Sanitize input before processing
+      const sanitizedText = sanitizeText(text);
+      const sanitizedTags = tags.map(tag => sanitizeText(tag)).filter(tag => tag.length > 0);
+      
+      if (!sanitizedText.trim()) {
+        toast({
+          title: "Invalid input",
+          description: "Please enter valid journal content.",
+          variant: "destructive",
+        });
+        return;
+      }
+      const result = await createEntry(sanitizedText, sanitizedTags);
       setLastEntryResult(result);
       
       // Update challenge progress for all active challenges
