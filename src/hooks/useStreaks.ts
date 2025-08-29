@@ -33,7 +33,7 @@ export const useStreaks = () => {
         .from('profiles')
         .select('current_streak, last_entry_date')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
       if (profile) {
         const today = new Date().toISOString().split('T')[0];
@@ -56,11 +56,29 @@ export const useStreaks = () => {
           }
         }
 
+        console.log('Current streak data:', { currentStreak, lastEntry });
         setStreakData({
           currentStreak,
           lastEntryDate: lastEntry,
           badgeLevel: getBadgeLevel(currentStreak)
         });
+      } else {
+        // Create profile if it doesn't exist
+        const { error } = await supabase
+          .from('profiles')
+          .insert({
+            user_id: user.id,
+            current_streak: 0,
+            last_entry_date: null
+          });
+        
+        if (!error) {
+          setStreakData({
+            currentStreak: 0,
+            lastEntryDate: null,
+            badgeLevel: null
+          });
+        }
       }
     } catch (error) {
       console.error('Error calculating streak:', error);
