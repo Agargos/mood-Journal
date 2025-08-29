@@ -28,23 +28,36 @@ export const useStreaks = () => {
     if (!user) return;
 
     try {
+      console.log('Calculating streak for user:', user.id);
+      
       // Get user's profile data
-      const { data: profile } = await supabase
+      const { data: profile, error } = await supabase
         .from('profiles')
         .select('current_streak, last_entry_date')
         .eq('user_id', user.id)
         .maybeSingle();
+
+      if (error) {
+        console.error('Error fetching profile:', error);
+        return;
+      }
+
+      console.log('Profile data:', profile);
 
       if (profile) {
         const today = new Date().toISOString().split('T')[0];
         const lastEntry = profile.last_entry_date;
         let currentStreak = profile.current_streak || 0;
 
+        console.log('Today:', today, 'Last entry:', lastEntry, 'Current streak:', currentStreak);
+
         if (lastEntry) {
           const lastEntryDate = new Date(lastEntry);
           const todayDate = new Date(today);
           const diffTime = todayDate.getTime() - lastEntryDate.getTime();
           const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+          console.log('Days difference:', diffDays);
 
           // If more than 1 day has passed, reset streak
           if (diffDays > 1) {
@@ -53,16 +66,20 @@ export const useStreaks = () => {
               .from('profiles')
               .update({ current_streak: 0 })
               .eq('user_id', user.id);
+            console.log('Streak reset due to gap');
           }
         }
 
-        console.log('Current streak data:', { currentStreak, lastEntry });
-        setStreakData({
+        const streakData = {
           currentStreak,
           lastEntryDate: lastEntry,
           badgeLevel: getBadgeLevel(currentStreak)
-        });
+        };
+
+        console.log('Setting streak data:', streakData);
+        setStreakData(streakData);
       } else {
+        console.log('No profile found, creating one');
         // Create profile if it doesn't exist
         const { error } = await supabase
           .from('profiles')
@@ -93,14 +110,24 @@ export const useStreaks = () => {
     try {
       const today = new Date().toISOString().split('T')[0];
       
-      const { data: profile } = await supabase
+      console.log('Updating streak for today:', today);
+      
+      const { data: profile, error } = await supabase
         .from('profiles')
         .select('current_streak, last_entry_date')
         .eq('user_id', user.id)
         .single();
 
+      if (error) {
+        console.error('Error fetching profile for streak update:', error);
+        return;
+      }
+
+      console.log('Current profile before update:', profile);
+
       // Skip if we already updated today
       if (profile?.last_entry_date === today) {
+        console.log('Streak already updated today');
         return;
       }
 
@@ -113,13 +140,18 @@ export const useStreaks = () => {
         const lastEntryString = lastEntryDate.toISOString().split('T')[0];
         const yesterdayString = yesterday.toISOString().split('T')[0];
         
+        console.log('Last entry was:', lastEntryString, 'Yesterday was:', yesterdayString);
+        
         // If last entry was yesterday, increment streak
         if (lastEntryString === yesterdayString) {
           newStreak = (profile.current_streak || 0) + 1;
+          console.log('Incrementing streak to:', newStreak);
+        } else {
+          console.log('Starting new streak');
         }
       }
 
-      await supabase
+      const { error: updateError } = await supabase
         .from('profiles')
         .update({
           current_streak: newStreak,
@@ -127,11 +159,21 @@ export const useStreaks = () => {
         })
         .eq('user_id', user.id);
 
-      setStreakData({
+      if (updateError) {
+        console.error('Error updating streak:', updateError);
+        return;
+      }
+
+      console.log('Streak updated successfully to:', newStreak);
+
+      const newStreakData = {
         currentStreak: newStreak,
         lastEntryDate: today,
         badgeLevel: getBadgeLevel(newStreak)
-      });
+      };
+
+      setStreakData(newStreakData);
+      console.log('Streak data updated in state:', newStreakData);
     } catch (error) {
       console.error('Error updating streak:', error);
     }
