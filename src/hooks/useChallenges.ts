@@ -26,6 +26,7 @@ export interface UserChallenge {
   completed_at: string | null;
   streak_count: number;
   last_activity_date: string | null;
+  notes: string | null;
   challenge: Challenge;
 }
 
@@ -254,6 +255,35 @@ export const useChallenges = () => {
       console.error('Error resuming challenge:', error);
     }
   };
+  
+  const updateChallengeNotes = async (challengeId: string, notes: string) => {
+    if (!user) return;
+
+    try {
+      const userChallenge = userChallenges.find(uc => uc.challenge_id === challengeId);
+      if (!userChallenge) return;
+
+      const { error } = await supabase
+        .from('user_challenges')
+        .update({ notes })
+        .eq('id', userChallenge.id);
+
+      if (error) throw error;
+
+      await fetchUserChallenges();
+      toast({
+        title: "Notes Updated",
+        description: "Your challenge notes have been saved successfully.",
+      });
+    } catch (error) {
+      console.error('Error updating challenge notes:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update notes. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
 
   const getAvailableChallenges = () => {
     const joinedChallengeIds = userChallenges.map(uc => uc.challenge_id);
@@ -279,6 +309,7 @@ export const useChallenges = () => {
     getAvailableChallenges,
     getActiveChallenges,
     getCompletedChallenges,
+    updateChallengeNotes,
     refetch: () => Promise.all([fetchChallenges(), fetchUserChallenges()])
   };
 };

@@ -1,12 +1,31 @@
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Textarea } from '@/components/ui/textarea';
 import { useChallenges } from '@/hooks/useChallenges';
-import { Trophy, Target, Zap } from 'lucide-react';
+import { Trophy, Target, Zap, FileText } from 'lucide-react';
 
 export const ActiveChallenges = () => {
-  const { getActiveChallenges, loading } = useChallenges();
+  const { getActiveChallenges, updateChallengeNotes, loading } = useChallenges();
   const activeChallenges = getActiveChallenges();
+  const [selectedChallenge, setSelectedChallenge] = useState<string | null>(null);
+  const [noteText, setNoteText] = useState('');
+
+  const handleOpenNotes = (challengeId: string, existingNotes: string | null) => {
+    setSelectedChallenge(challengeId);
+    setNoteText(existingNotes || '');
+  };
+
+  const handleSaveNotes = async () => {
+    if (selectedChallenge) {
+      await updateChallengeNotes(selectedChallenge, noteText);
+      setSelectedChallenge(null);
+      setNoteText('');
+    }
+  };
 
   if (loading) {
     return (
@@ -74,15 +93,66 @@ export const ActiveChallenges = () => {
                     </p>
                   </div>
                 </div>
-                <Badge 
-                  variant="outline" 
-                  className="text-xs"
-                  style={{ borderColor: challenge.badge_color, color: challenge.badge_color }}
-                >
-                  {Math.round(progressPercentage)}%
-                </Badge>
+                <div className="flex items-center gap-2">
+                  <Dialog open={selectedChallenge === userChallenge.challenge_id} onOpenChange={(open) => !open && setSelectedChallenge(null)}>
+                    <DialogTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleOpenNotes(userChallenge.challenge_id, userChallenge.notes)}
+                        className="h-6 px-2"
+                      >
+                        <FileText className="h-3 w-3" />
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2">
+                          <span>{challenge.badge_icon}</span>
+                          {challenge.title} - My Notes
+                        </DialogTitle>
+                      </DialogHeader>
+                      <div className="space-y-4">
+                        <div>
+                          <p className="text-sm text-muted-foreground mb-2">Challenge Description:</p>
+                          <p className="text-sm bg-muted p-3 rounded">{challenge.description}</p>
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium mb-2">What does this challenge ask you to do?</p>
+                          <Textarea
+                            placeholder="Write down what this challenge requires you to do, your goals, or any notes to help you succeed..."
+                            value={noteText}
+                            onChange={(e) => setNoteText(e.target.value)}
+                            className="min-h-[100px]"
+                          />
+                        </div>
+                        <div className="flex justify-end gap-2">
+                          <Button variant="outline" onClick={() => setSelectedChallenge(null)}>
+                            Cancel
+                          </Button>
+                          <Button onClick={handleSaveNotes}>
+                            Save Notes
+                          </Button>
+                        </div>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                  <Badge 
+                    variant="outline" 
+                    className="text-xs"
+                    style={{ borderColor: challenge.badge_color, color: challenge.badge_color }}
+                  >
+                    {Math.round(progressPercentage)}%
+                  </Badge>
+                </div>
               </div>
               <Progress value={progressPercentage} className="h-2" />
+              {userChallenge.notes && (
+                <div className="mt-2 p-2 bg-muted rounded text-xs">
+                  <p className="font-medium text-muted-foreground mb-1">My Notes:</p>
+                  <p>{userChallenge.notes}</p>
+                </div>
+              )}
             </div>
           );
         })}

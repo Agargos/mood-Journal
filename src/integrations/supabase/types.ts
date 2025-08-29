@@ -204,6 +204,7 @@ export type Database = {
           created_at: string
           id: string
           last_activity_date: string | null
+          notes: string | null
           progress: number | null
           started_at: string
           status: string
@@ -217,6 +218,7 @@ export type Database = {
           created_at?: string
           id?: string
           last_activity_date?: string | null
+          notes?: string | null
           progress?: number | null
           started_at?: string
           status?: string
@@ -230,6 +232,7 @@ export type Database = {
           created_at?: string
           id?: string
           last_activity_date?: string | null
+          notes?: string | null
           progress?: number | null
           started_at?: string
           status?: string
