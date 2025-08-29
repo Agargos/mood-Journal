@@ -16,30 +16,39 @@ export type Database = {
     Tables: {
       journal_entries: {
         Row: {
+          coping_strategy: string | null
           created_at: string | null
+          emotions: string[] | null
           id: number
           score: number | null
           sentiment: string | null
           tags: string[] | null
           text: string
+          updated_at: string | null
           user_id: string
         }
         Insert: {
+          coping_strategy?: string | null
           created_at?: string | null
+          emotions?: string[] | null
           id?: number
           score?: number | null
           sentiment?: string | null
           tags?: string[] | null
           text: string
+          updated_at?: string | null
           user_id: string
         }
         Update: {
+          coping_strategy?: string | null
           created_at?: string | null
+          emotions?: string[] | null
           id?: number
           score?: number | null
           sentiment?: string | null
           tags?: string[] | null
           text?: string
+          updated_at?: string | null
           user_id?: string
         }
         Relationships: []
