@@ -10,8 +10,6 @@ export const SecurityDashboard = () => {
   const { user } = useAuth();
   const { securityAlerts } = useSecurityMonitoring();
 
-  if (!user) return null;
-
   const securityFeatures = [
     {
       name: 'Row Level Security (RLS)',
