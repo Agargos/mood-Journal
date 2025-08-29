@@ -75,6 +75,7 @@ const Index = () => {
             
             {/* Right Column - Dashboard & Gamification */}
             <div className="lg:col-span-1 space-y-6">
+              <SecurityDashboard />
               <ActiveChallenges />
               <StreakCounter />
               {!isPremium && <PremiumUpgrade />}
@@ -95,9 +96,6 @@ const Index = () => {
             
             {/* Mood Forecast - New AI feature */}
             <MoodForecast />
-            
-            {/* Security Dashboard */}
-            <SecurityDashboard />
             
             <ChallengeCenter />
           </div>
