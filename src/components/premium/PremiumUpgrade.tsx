@@ -36,15 +36,19 @@ export const PremiumUpgrade = () => {
 
       const modal = window.FlutterwaveCheckout({
         public_key: keyData.publicKey,
-      tx_ref: `premium_${user.id}_${Date.now()}`,
-      amount: 50, // GHS 50
-      currency: "GHS",
-      payment_options: "card,mobilemoney,banktransfer",
-      customer: {
-        email: user.email,
-        phone_number: "0500000000", // Default phone number
-        name: user.email,
-      },
+        tx_ref: `premium_${user.id}_${Date.now()}`,
+        amount: 50, // GHS 50
+        currency: "GHS",
+        payment_options: "mobilemoney,card,banktransfer",
+        customer: {
+          email: user.email,
+          phone_number: "", // Let user enter their phone number
+          name: user.email?.split('@')[0] || "Customer",
+        },
+        meta: {
+          user_id: user.id,
+          premium_upgrade: true
+        },
       customizations: {
         title: "Mood Journal Premium",
         description: "Upgrade to Premium for advanced features",
