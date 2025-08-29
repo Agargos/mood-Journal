@@ -10,7 +10,6 @@ import { StreakCounter } from '@/components/gamification/StreakCounter';
 import { ActiveChallenges } from '@/components/challenges/ActiveChallenges';
 import { ChallengeCenter } from '@/components/challenges/ChallengeCenter';
 import { MoodForecast } from '@/components/dashboard/MoodForecast';
-import { SecurityDashboard } from '@/components/security/SecurityDashboard';
 import { ExportButtons } from '@/components/export/ExportButtons';
 import { PremiumUpgrade } from '@/components/premium/PremiumUpgrade';
 import { MotivationalQuote } from '@/components/quotes/MotivationalQuote';
@@ -64,9 +63,6 @@ const Index = () => {
 
           {/* Stats Cards */}
           <StatsCards />
-
-          {/* Security Dashboard - Front and Center */}
-          <SecurityDashboard />
 
           {/* Main Content Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
