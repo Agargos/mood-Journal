@@ -8,20 +8,22 @@ import { EntryList } from '@/components/journal/EntryList';
 import { StatsCards } from '@/components/dashboard/StatsCards';
 import { StreakCounter } from '@/components/gamification/StreakCounter';
 import { ActiveChallenges } from '@/components/challenges/ActiveChallenges';
-import { ChallengeCenter } from '@/components/challenges/ChallengeCenter';
 import { MoodForecast } from '@/components/dashboard/MoodForecast';
 import { ExportButtons } from '@/components/export/ExportButtons';
 import { PremiumUpgrade } from '@/components/premium/PremiumUpgrade';
 import { MotivationalQuote } from '@/components/quotes/MotivationalQuote';
+import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { usePremium } from '@/hooks/usePremium';
 import { useMotivationalQuotes } from '@/hooks/useMotivationalQuotes';
+import { useNavigate } from 'react-router-dom';
 import React, { useEffect } from 'react';
 
 const Index = () => {
   const { user, loading } = useAuth();
   const { isPremium } = usePremium();
   const { quote } = useMotivationalQuotes();
+  const navigate = useNavigate();
 
   // Ensure Flutterwave script loads early
   useEffect(() => {
@@ -75,6 +77,13 @@ const Index = () => {
             {/* Right Column - Dashboard & Gamification */}
             <div className="lg:col-span-1 space-y-6">
               <ActiveChallenges />
+              <Button 
+                onClick={() => navigate('/challenges')} 
+                className="w-full"
+                size="lg"
+              >
+                Challenge Center
+              </Button>
               <StreakCounter />
               {!isPremium && <PremiumUpgrade />}
               {isPremium && quote && (
@@ -94,8 +103,6 @@ const Index = () => {
             
             {/* Mood Forecast - New AI feature */}
             <MoodForecast />
-            
-            <ChallengeCenter />
           </div>
         </div>
       </div>
