@@ -14,6 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
+      challenges: {
+        Row: {
+          badge_color: string | null
+          badge_icon: string | null
+          category: string
+          created_at: string
+          description: string
+          difficulty: string
+          duration_days: number
+          id: string
+          is_active: boolean | null
+          target_value: number
+          title: string
+          type: string
+        }
+        Insert: {
+          badge_color?: string | null
+          badge_icon?: string | null
+          category?: string
+          created_at?: string
+          description: string
+          difficulty?: string
+          duration_days: number
+          id?: string
+          is_active?: boolean | null
+          target_value: number
+          title: string
+          type: string
+        }
+        Update: {
+          badge_color?: string | null
+          badge_icon?: string | null
+          category?: string
+          created_at?: string
+          description?: string
+          difficulty?: string
+          duration_days?: number
+          id?: string
+          is_active?: boolean | null
+          target_value?: number
+          title?: string
+          type?: string
+        }
+        Relationships: []
+      }
       journal_entries: {
         Row: {
           coping_strategy: string | null
@@ -85,6 +130,56 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      user_challenges: {
+        Row: {
+          challenge_id: string
+          completed_at: string | null
+          created_at: string
+          id: string
+          last_activity_date: string | null
+          progress: number | null
+          started_at: string
+          status: string
+          streak_count: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          challenge_id: string
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          last_activity_date?: string | null
+          progress?: number | null
+          started_at?: string
+          status?: string
+          streak_count?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          challenge_id?: string
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          last_activity_date?: string | null
+          progress?: number | null
+          started_at?: string
+          status?: string
+          streak_count?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_challenges_challenge_id_fkey"
+            columns: ["challenge_id"]
+            isOneToOne: false
+            referencedRelation: "challenges"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

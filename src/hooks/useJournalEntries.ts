@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
+import { useChallenges } from './useChallenges';
 
 export interface JournalEntry {
   id: number;
@@ -62,6 +63,7 @@ export const useJournalEntries = () => {
 
     // Refresh entries after creating new one
     await fetchEntries();
+    
     return data;
   };
 

@@ -9,6 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 import { TagInput } from '@/components/ui/tag-input';
 import { MotivationalQuote } from '@/components/quotes/MotivationalQuote';
 import { CopingStrategy } from '@/components/coping/CopingStrategy';
+import { useChallenges } from '@/hooks/useChallenges';
 import { Brain, Loader2 } from 'lucide-react';
 
 export const EntryForm = () => {
@@ -20,6 +21,7 @@ export const EntryForm = () => {
   const { updateStreak } = useStreaks();
   const { generateQuote, quote } = useMotivationalQuotes();
   const { toast } = useToast();
+  const { updateChallengeProgress, getActiveChallenges } = useChallenges();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,6 +31,12 @@ export const EntryForm = () => {
     try {
       const result = await createEntry(text, tags);
       setLastEntryResult(result);
+      
+      // Update challenge progress for all active challenges
+      const activeChallenges = getActiveChallenges();
+      for (const userChallenge of activeChallenges) {
+        await updateChallengeProgress(userChallenge.challenge_id);
+      }
       
       await updateStreak();
       await generateQuote();

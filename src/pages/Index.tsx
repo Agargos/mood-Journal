@@ -1,4 +1,4 @@
-import { useAuth } from '@/hooks/useAuth';
+import { FlutterwaveScript } from '@/components/premium/FlutterwaveScript';
 import { AuthPage } from '@/components/auth/AuthPage';
 import { Navigation } from '@/components/layout/Navigation';
 import { EntryForm } from '@/components/journal/EntryForm';
@@ -7,12 +7,14 @@ import { EmotionInsights } from '@/components/dashboard/EmotionInsights';
 import { EntryList } from '@/components/journal/EntryList';
 import { StatsCards } from '@/components/dashboard/StatsCards';
 import { StreakCounter } from '@/components/gamification/StreakCounter';
+import { ActiveChallenges } from '@/components/challenges/ActiveChallenges';
+import { ChallengeCenter } from '@/components/challenges/ChallengeCenter';
 import { ExportButtons } from '@/components/export/ExportButtons';
 import { PremiumUpgrade } from '@/components/premium/PremiumUpgrade';
 import { MotivationalQuote } from '@/components/quotes/MotivationalQuote';
-import { useMotivationalQuotes } from '@/hooks/useMotivationalQuotes';
+import { useAuth } from '@/hooks/useAuth';
 import { usePremium } from '@/hooks/usePremium';
-import { FlutterwaveScript } from '@/components/premium/FlutterwaveScript';
+import { useMotivationalQuotes } from '@/hooks/useMotivationalQuotes';
 import { useEffect } from 'react';
 
 const Index = () => {
@@ -63,23 +65,29 @@ const Index = () => {
 
           {/* Main Content Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Left Column */}
+            {/* Left Column - Journal Entry */}
             <div className="lg:col-span-2 space-y-6">
               <EntryForm />
               <EntryList />
             </div>
             
-            {/* Right Column */}
-            <div className="space-y-6">
+            {/* Right Column - Dashboard & Gamification */}
+            <div className="lg:col-span-1 space-y-6">
+              <ActiveChallenges />
               <StreakCounter />
               {!isPremium && <PremiumUpgrade />}
               {isPremium && quote && (
                 <MotivationalQuote quote={quote} />
               )}
               <ExportButtons />
-              <EnhancedMoodChart />
-              <EmotionInsights />
             </div>
+          </div>
+
+          {/* Enhanced Analytics Section */}
+          <div className="space-y-6">
+            <EnhancedMoodChart />
+            <EmotionInsights />
+            <ChallengeCenter />
           </div>
         </div>
       </div>
