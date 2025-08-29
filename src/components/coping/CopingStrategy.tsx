@@ -2,7 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Heart, Lightbulb, CheckCircle } from "lucide-react";
-import { useState } from "react";
+import React, { useState } from "react";
 
 interface CopingStrategyProps {
   strategy: string;

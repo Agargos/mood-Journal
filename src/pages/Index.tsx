@@ -15,7 +15,7 @@ import { MotivationalQuote } from '@/components/quotes/MotivationalQuote';
 import { useAuth } from '@/hooks/useAuth';
 import { usePremium } from '@/hooks/usePremium';
 import { useMotivationalQuotes } from '@/hooks/useMotivationalQuotes';
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 
 const Index = () => {
   const { user, loading } = useAuth();
