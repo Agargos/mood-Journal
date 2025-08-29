@@ -126,13 +126,17 @@ export const useChallenges = () => {
 
     try {
       const userChallenge = userChallenges.find(uc => uc.challenge_id === challengeId && uc.status === 'active');
-      if (!userChallenge) return;
+      if (!userChallenge) {
+        console.log('No active user challenge found for:', challengeId);
+        return;
+      }
 
       const challenge = userChallenge.challenge;
       const today = new Date().toISOString().split('T')[0];
       let newProgress = userChallenge.progress;
       let newStreakCount = userChallenge.streak_count;
       let newStatus = userChallenge.status;
+      let shouldUpdate = false;
 
       // Update progress based on challenge type
       switch (challenge.type) {
@@ -140,23 +144,45 @@ export const useChallenges = () => {
           if (userChallenge.last_activity_date !== today) {
             newStreakCount += 1;
             newProgress = newStreakCount;
+            shouldUpdate = true;
           }
           break;
         case 'count':
           newProgress += 1;
+          shouldUpdate = true;
           break;
         case 'daily':
           // For daily challenges, we increment progress each day
           if (userChallenge.last_activity_date !== today) {
             newProgress += 1;
+            shouldUpdate = true;
           }
           break;
+        case 'weekly':
+          // Weekly challenges count entries this week
+          if (userChallenge.last_activity_date !== today) {
+            newProgress += 1;
+            shouldUpdate = true;
+          }
+          break;
+      }
+
+      if (!shouldUpdate) {
+        console.log('No update needed for challenge:', challenge.title);
+        return;
       }
 
       // Check if challenge is completed
       if (newProgress >= challenge.target_value) {
         newStatus = 'completed';
       }
+
+      console.log('Updating challenge progress:', {
+        challenge: challenge.title,
+        oldProgress: userChallenge.progress,
+        newProgress,
+        target: challenge.target_value
+      });
 
       const { error } = await supabase
         .from('user_challenges')
@@ -165,6 +191,7 @@ export const useChallenges = () => {
           streak_count: newStreakCount,
           status: newStatus,
           last_activity_date: today,
+          updated_at: new Date().toISOString(),
           ...(newStatus === 'completed' && { completed_at: new Date().toISOString() })
         })
         .eq('id', userChallenge.id);
