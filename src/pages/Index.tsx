@@ -2,8 +2,6 @@ import { FlutterwaveScript } from '@/components/premium/FlutterwaveScript';
 import { AuthPage } from '@/components/auth/AuthPage';
 import { Navigation } from '@/components/layout/Navigation';
 import { EntryForm } from '@/components/journal/EntryForm';
-import { EmotionInsights } from '@/components/dashboard/EmotionInsights';
-import { EnhancedMoodChart } from '@/components/dashboard/EnhancedMoodChart';
 import { EntryList } from '@/components/journal/EntryList';
 import { StatsCards } from '@/components/dashboard/StatsCards';
 import { StreakCounter } from '@/components/gamification/StreakCounter';
@@ -104,10 +102,6 @@ const Index = () => {
           {/* Enhanced Analytics Section */}
           <div className="space-y-6">
             <h2 className="text-2xl font-semibold">Analytics & Insights</h2>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <EnhancedMoodChart />
-              <EmotionInsights />
-            </div>
             
             {/* Mood Forecast - New AI feature */}
             <MoodForecast />
