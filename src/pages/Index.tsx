@@ -84,6 +84,14 @@ const Index = () => {
               >
                 Challenge Center
               </Button>
+              <Button 
+                onClick={() => navigate('/emotion-tracking')} 
+                className="w-full"
+                size="lg"
+                variant="outline"
+              >
+                7-Day Emotion Tracking
+              </Button>
               <StreakCounter />
               {!isPremium && <PremiumUpgrade />}
               {isPremium && quote && (
