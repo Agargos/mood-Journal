@@ -29,7 +29,7 @@ This project is an **AI-Powered Mood Journal** app designed to help users track 
 | Authentication    | Supabase Auth                                  |
 | AI Features       | Hugging Face/Free AI Models or DeepSeek API    |
 | Payments          | Paystack (Live API Integration)                |
-| Deployment        | Vercel / Netlify                               |
+| Deployment        | Vercel                               |
 
 ---
 
