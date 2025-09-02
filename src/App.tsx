@@ -7,6 +7,7 @@ import { ThemeProvider } from "@/components/providers/theme-provider";
 import Index from "./pages/Index";
 import ChallengeCenterPage from "./pages/ChallengeCenter";
 import EmotionTrackingPage from "./pages/EmotionTracking";
+import PaymentSuccess from "./pages/PaymentSuccess";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -22,6 +23,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/challenges" element={<ChallengeCenterPage />} />
             <Route path="/emotion-tracking" element={<EmotionTrackingPage />} />
+            <Route path="/payment-success" element={<PaymentSuccess />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

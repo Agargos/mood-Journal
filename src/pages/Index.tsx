@@ -1,4 +1,4 @@
-import { FlutterwaveScript } from '@/components/premium/FlutterwaveScript';
+
 import { AuthPage } from '@/components/auth/AuthPage';
 import { Navigation } from '@/components/layout/Navigation';
 import { EntryForm } from '@/components/journal/EntryForm';
@@ -23,17 +23,6 @@ const Index = () => {
   const { quote } = useMotivationalQuotes();
   const navigate = useNavigate();
 
-  // Ensure Flutterwave script loads early
-  useEffect(() => {
-    if (!window.FlutterwaveCheckout) {
-      const script = document.createElement('script');
-      script.src = 'https://checkout.flutterwave.com/v3.js';
-      script.async = true;
-      script.onload = () => console.log('Flutterwave script loaded');
-      script.onerror = (error) => console.error('Failed to load Flutterwave script:', error);
-      document.head.appendChild(script);
-    }
-  }, []);
 
   if (loading) {
     return (
@@ -49,7 +38,6 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <FlutterwaveScript />
       <Navigation />
       <div className="max-w-6xl mx-auto p-6">
         <div className="space-y-6">

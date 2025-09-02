@@ -1,6 +1,8 @@
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/hooks/useAuth';
-import { Heart, LogOut, User } from 'lucide-react';
+import { usePremium } from '@/hooks/usePremium';
+import { Heart, LogOut, User, Crown } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,6 +13,7 @@ import { ThemeToggle } from '@/components/ui/theme-toggle';
 
 export const Navigation = () => {
   const { user, signOut } = useAuth();
+  const { isPremium } = usePremium();
 
   const handleSignOut = async () => {
     await signOut();
@@ -27,6 +30,12 @@ export const Navigation = () => {
             <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
               Mood Journal
             </h1>
+            {isPremium && (
+              <Badge variant="secondary" className="bg-primary/20 text-primary border-primary/30">
+                <Crown className="h-3 w-3 mr-1" />
+                Premium
+              </Badge>
+            )}
           </div>
 
           <div className="flex items-center gap-4">
