@@ -50,7 +50,7 @@ export const PremiumUpgrade = () => {
     setShowPlanDialog(false);
 
     try {
-      const amount = planType === 'lifetime' ? 14999 : 2999; // ₦149.99 lifetime, ₦29.99 monthly
+      const amount = planType === 'lifetime' ? 9999 : 1999; // $99.99 lifetime, $19.99 monthly
       
       // Initialize payment with backend
       const { data: paymentData, error: paymentError } = await supabase.functions.invoke(
@@ -74,7 +74,7 @@ export const PremiumUpgrade = () => {
         key: paymentData.data.access_code,
         email: paymentData.data.customer?.email,
         amount: paymentData.data.amount,
-        currency: 'NGN',
+        currency: 'USD',
         ref: paymentData.data.reference,
         metadata: {
           plan_type: planType,
@@ -236,7 +236,7 @@ export const PremiumUpgrade = () => {
                       <h3 className="font-semibold">Lifetime Premium</h3>
                       <Badge variant="secondary" className="bg-primary/20 text-primary">Best Value</Badge>
                     </div>
-                    <p className="text-2xl font-bold text-primary mb-2">₦149.99</p>
+                    <p className="text-2xl font-bold text-primary mb-2">$99.99</p>
                     <p className="text-sm text-muted-foreground mb-4">One-time payment, lifetime access</p>
                     <Button 
                       onClick={() => handlePayment('lifetime')}
@@ -251,7 +251,7 @@ export const PremiumUpgrade = () => {
                 <Card>
                   <CardContent className="p-4">
                     <h3 className="font-semibold mb-2">Monthly Premium</h3>
-                    <p className="text-2xl font-bold mb-2">₦29.99</p>
+                    <p className="text-2xl font-bold mb-2">$19.99</p>
                     <p className="text-sm text-muted-foreground mb-4">Per month, cancel anytime</p>
                     <Button 
                       onClick={() => handlePayment('monthly')}
