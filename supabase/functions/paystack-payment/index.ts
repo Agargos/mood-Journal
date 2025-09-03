@@ -42,7 +42,7 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         email: email || user.email,
-        amount: amount, // Amount already in cents
+        amount: amount * 100, // Convert to cents for USD
         currency: "USD",
         metadata: {
           user_id: user.id,
