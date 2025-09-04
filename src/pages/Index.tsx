@@ -15,6 +15,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { usePremium } from '@/hooks/usePremium';
 import { useMotivationalQuotes } from '@/hooks/useMotivationalQuotes';
 import { useNavigate } from 'react-router-dom';
+import { MessageCircle, Trophy, BarChart3 } from 'lucide-react';
 import React, { useEffect } from 'react';
 
 const Index = () => {
@@ -63,19 +64,33 @@ const Index = () => {
             {/* Right Column - Dashboard & Gamification */}
             <div className="lg:col-span-1 space-y-6">
               <ActiveChallenges />
+              
+              <Button 
+                onClick={() => navigate('/ai-chat')}
+                className="w-full"
+                size="lg"
+                variant="secondary"
+              >
+                <MessageCircle className="mr-2 h-4 w-4" />
+                AI Mood Support
+              </Button>
+              
               <Button 
                 onClick={() => navigate('/challenges')} 
                 className="w-full"
                 size="lg"
               >
+                <Trophy className="mr-2 h-4 w-4" />
                 Challenge Center
               </Button>
+              
               <Button 
                 onClick={() => navigate('/emotion-tracking')} 
                 className="w-full"
                 size="lg"
                 variant="outline"
               >
+                <BarChart3 className="mr-2 h-4 w-4" />
                 7-Day Emotion Tracking
               </Button>
               <StreakCounter />

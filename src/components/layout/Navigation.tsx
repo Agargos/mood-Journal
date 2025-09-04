@@ -2,7 +2,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/hooks/useAuth';
 import { usePremium } from '@/hooks/usePremium';
-import { Heart, LogOut, User, Crown } from 'lucide-react';
+import { Heart, LogOut, User, Crown, MessageCircle, BookOpen, BarChart3, Trophy } from 'lucide-react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,10 +15,14 @@ import { ThemeToggle } from '@/components/ui/theme-toggle';
 export const Navigation = () => {
   const { user, signOut } = useAuth();
   const { isPremium } = usePremium();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const handleSignOut = async () => {
     await signOut();
   };
+
+  const isActive = (path: string) => location.pathname === path;
 
   return (
     <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -39,7 +44,52 @@ export const Navigation = () => {
           </div>
 
           <div className="flex items-center gap-4">
+            {user && (
+              <>
+                <Button
+                  variant={isActive('/') ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => navigate('/')}
+                  className="flex items-center gap-2"
+                >
+                  <BookOpen className="h-4 w-4" />
+                  Journal
+                </Button>
+                
+                <Button
+                  variant={isActive('/ai-chat') ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => navigate('/ai-chat')}
+                  className="flex items-center gap-2"
+                >
+                  <MessageCircle className="h-4 w-4" />
+                  AI Chat
+                </Button>
+                
+                <Button
+                  variant={isActive('/emotion-tracking') ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => navigate('/emotion-tracking')}
+                  className="flex items-center gap-2"
+                >
+                  <BarChart3 className="h-4 w-4" />
+                  Analytics
+                </Button>
+                
+                <Button
+                  variant={isActive('/challenges') ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => navigate('/challenges')}
+                  className="flex items-center gap-2"
+                >
+                  <Trophy className="h-4 w-4" />
+                  Challenges
+                </Button>
+              </>
+            )}
+            
             <ThemeToggle />
+            
             {user && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
