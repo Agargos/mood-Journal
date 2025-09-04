@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
-import { SecurityDashboard } from '@/components/security/SecurityDashboard';
+import { CoreFeatures } from '@/components/auth/CoreFeatures';
 import { BookOpen, Heart } from 'lucide-react';
 
 export const AuthPage = () => {
@@ -160,9 +160,9 @@ export const AuthPage = () => {
           </CardContent>
         </Card>
 
-        {/* Security Dashboard */}
+        {/* Core Features */}
         <div className="mt-6">
-          <SecurityDashboard />
+          <CoreFeatures />
         </div>
       </div>
     </div>
