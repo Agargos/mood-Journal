@@ -15,11 +15,19 @@ interface ConversationMessage {
 
 const analyzeSentiment = async (text: string) => {
   try {
+    const apiKey = Deno.env.get('HUGGINGFACE_API_KEY');
+    if (!apiKey) {
+      console.error('HUGGINGFACE_API_KEY not found in environment variables');
+      return { label: "NEUTRAL", score: 0.5 };
+    }
+
+    console.log('Analyzing sentiment for text:', text);
+    
     const response = await fetch(
       "https://api-inference.huggingface.co/models/distilbert-base-uncased-finetuned-sst-2-english",
       {
         headers: {
-          Authorization: `Bearer ${Deno.env.get('HUGGINGFACE_API_KEY')}`,
+          Authorization: `Bearer ${apiKey}`,
           "Content-Type": "application/json",
         },
         method: "POST",
@@ -28,81 +36,115 @@ const analyzeSentiment = async (text: string) => {
     );
 
     if (!response.ok) {
-      console.error(`Sentiment analysis API error: ${response.status} ${response.statusText}`);
-      // Return fallback sentiment analysis
+      const errorText = await response.text();
+      console.error(`Sentiment analysis API error: ${response.status} ${response.statusText}`, errorText);
+      
+      // Simple keyword-based sentiment analysis as fallback
+      const lowerText = text.toLowerCase();
+      const positiveWords = ['happy', 'good', 'great', 'wonderful', 'excited', 'joy', 'love', 'amazing', 'fantastic', 'excellent'];
+      const negativeWords = ['sad', 'bad', 'terrible', 'awful', 'hate', 'angry', 'depressed', 'worried', 'anxious', 'upset'];
+      
+      const hasPositive = positiveWords.some(word => lowerText.includes(word));
+      const hasNegative = negativeWords.some(word => lowerText.includes(word));
+      
+      if (hasPositive && !hasNegative) {
+        return { label: "POSITIVE", score: 0.7 };
+      } else if (hasNegative && !hasPositive) {
+        return { label: "NEGATIVE", score: 0.7 };
+      }
+      
       return { label: "NEUTRAL", score: 0.5 };
     }
 
     const result = await response.json();
+    console.log('Sentiment API result:', result);
     return result[0] || { label: "NEUTRAL", score: 0.5 };
   } catch (error) {
     console.error('Sentiment analysis error:', error);
-    // Return fallback sentiment analysis
     return { label: "NEUTRAL", score: 0.5 };
   }
 };
 
 const generateResponse = async (userMessage: string, sentiment: string) => {
-  // Create fallback responses first
-  const fallbackResponses = {
-    POSITIVE: "I'm so glad to hear you're feeling good! It's wonderful when we can appreciate the positive moments in life. Keep nurturing this positive energy - maybe by doing something you enjoy or sharing your good mood with someone special.",
-    NEGATIVE: "I hear you, and I want you to know that what you're feeling is valid. Difficult emotions are part of being human, and it's okay to feel this way. Would it help to try some deep breathing, write down your thoughts, or reach out to someone you trust?",
-    NEUTRAL: "Thank you for sharing with me. Sometimes our feelings can be complex or hard to name. That's completely normal. Is there anything specific on your mind today, or would you like to talk about what's been happening in your life?"
+  // Create more varied responses based on sentiment and message content
+  const createPersonalizedResponse = (userMessage: string, sentiment: string) => {
+    const lowerMessage = userMessage.toLowerCase();
+    
+    if (sentiment === 'POSITIVE') {
+      if (lowerMessage.includes('happy') || lowerMessage.includes('good') || lowerMessage.includes('great')) {
+        return "That's wonderful to hear! It sounds like you're in a really good place right now. What's been contributing to these positive feelings? Sometimes it helps to reflect on the good moments so we can appreciate them fully.";
+      }
+      return "I'm so glad you're feeling positive! Your energy comes through in your message. It's beautiful when we can recognize and embrace these uplifting moments. What would you like to do to celebrate or maintain this good feeling?";
+    } else if (sentiment === 'NEGATIVE') {
+      if (lowerMessage.includes('sad') || lowerMessage.includes('upset')) {
+        return "I hear that you're going through a difficult time, and I want you to know that your feelings are completely valid. It's okay to feel sad - it shows how deeply you care. Would it help to talk about what's weighing on your heart, or would you prefer some gentle coping strategies?";
+      }
+      if (lowerMessage.includes('anxious') || lowerMessage.includes('worried')) {
+        return "It sounds like anxiety is weighing heavily on you right now. That can feel really overwhelming. Remember that you've gotten through difficult days before, and you have the strength to get through this too. Have you tried any breathing exercises or grounding techniques that help you feel more centered?";
+      }
+      return "I can sense that you're struggling with some difficult emotions. That takes courage to acknowledge and share. You're not alone in feeling this way - it's part of being human. What kind of support feels most helpful to you right now?";
+    } else {
+      if (lowerMessage.includes('tired') || lowerMessage.includes('exhausted')) {
+        return "It sounds like you might be feeling drained or overwhelmed. Sometimes when we're tired, it can be hard to connect with our emotions. That's completely normal. Are you getting enough rest, or is there something specific that's been draining your energy?";
+      }
+      return "Thank you for sharing with me. Sometimes our feelings can be complex or in between - not clearly positive or negative, and that's perfectly okay. How has your day been treating you? Is there anything specific you'd like to explore or talk through?";
+    }
   };
 
+  const apiKey = Deno.env.get('HUGGINGFACE_API_KEY');
+  
+  // If no API key, use personalized responses
+  if (!apiKey) {
+    console.log('No API key found, using personalized fallback response');
+    return createPersonalizedResponse(userMessage, sentiment);
+  }
+
   try {
-    // Create a context-aware prompt for the conversational model
-    const empathyPrompts = {
-      POSITIVE: "The user is feeling positive. Acknowledge their good mood and encourage them to maintain this positive energy.",
-      NEGATIVE: "The user is feeling down or negative. Provide empathetic support, validation, and gentle coping suggestions.",
-      NEUTRAL: "The user seems neutral. Gently encourage them to share more about their feelings and offer supportive guidance."
-    };
-
-    const contextPrompt = `You are a supportive AI companion for emotional well-being. ${empathyPrompts[sentiment as keyof typeof empathyPrompts]} 
-
-User message: "${userMessage}"
-
-Respond with empathy, understanding, and helpful suggestions. Keep your response supportive, warm, and encouraging. Include emotional acknowledgment and practical coping suggestions when appropriate.`;
-
+    console.log('Attempting to generate AI response for:', userMessage, 'with sentiment:', sentiment);
+    
     const response = await fetch(
       "https://api-inference.huggingface.co/models/microsoft/DialoGPT-medium",
       {
         headers: {
-          Authorization: `Bearer ${Deno.env.get('HUGGINGFACE_API_KEY')}`,
+          Authorization: `Bearer ${apiKey}`,
           "Content-Type": "application/json",
         },
         method: "POST",
         body: JSON.stringify({ 
-          inputs: contextPrompt,
+          inputs: userMessage,
           parameters: {
-            max_length: 200,
-            temperature: 0.7,
-            do_sample: true
+            max_length: 100,
+            temperature: 0.8,
+            do_sample: true,
+            pad_token_id: 50256
           }
         }),
       }
     );
 
     if (!response.ok) {
-      console.error(`Conversational API error: ${response.status} ${response.statusText}`);
-      return fallbackResponses[sentiment as keyof typeof fallbackResponses] || 
-             "I'm here to listen and support you. How are you feeling right now, and is there anything you'd like to talk about?";
+      const errorText = await response.text();
+      console.error(`Conversational API error: ${response.status} ${response.statusText}`, errorText);
+      return createPersonalizedResponse(userMessage, sentiment);
     }
 
     const result = await response.json();
+    console.log('Conversational API result:', result);
+    
     const generatedText = result.generated_text || result[0]?.generated_text;
     
-    if (!generatedText) {
-      return fallbackResponses[sentiment as keyof typeof fallbackResponses] || 
-             "I'm here to support you. Can you tell me more about how you're feeling?";
+    if (!generatedText || generatedText.trim() === userMessage.trim()) {
+      console.log('No valid AI response, using personalized fallback');
+      return createPersonalizedResponse(userMessage, sentiment);
     }
 
-    return generatedText;
+    // Clean up the generated text to remove the input prompt
+    const cleanResponse = generatedText.replace(userMessage, '').trim();
+    return cleanResponse || createPersonalizedResponse(userMessage, sentiment);
     
   } catch (error) {
     console.error('Conversational model error:', error);
-    return fallbackResponses[sentiment as keyof typeof fallbackResponses] || 
-           "I'm here to listen and support you. How are you feeling right now, and is there anything you'd like to talk about?";
+    return createPersonalizedResponse(userMessage, sentiment);
   }
 };
 
