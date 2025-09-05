@@ -66,86 +66,67 @@ const analyzeSentiment = async (text: string) => {
 };
 
 const generateResponse = async (userMessage: string, sentiment: string) => {
-  // Create more varied responses based on sentiment and message content
   const createPersonalizedResponse = (userMessage: string, sentiment: string) => {
     const lowerMessage = userMessage.toLowerCase();
+    const messageLength = userMessage.length;
     
+    // Extract key emotional words and context
+    const emotionalWords = {
+      positive: ['happy', 'good', 'great', 'amazing', 'wonderful', 'excited', 'joy', 'love', 'fantastic', 'awesome', 'brilliant', 'excellent', 'perfect', 'thrilled'],
+      negative: ['sad', 'bad', 'terrible', 'awful', 'hate', 'angry', 'depressed', 'worried', 'anxious', 'upset', 'frustrated', 'overwhelmed', 'stressed', 'lonely', 'hurt', 'disappointed'],
+      work: ['work', 'job', 'boss', 'colleague', 'meeting', 'deadline', 'project', 'office'],
+      relationship: ['friend', 'family', 'partner', 'relationship', 'breakup', 'argument', 'love', 'boyfriend', 'girlfriend', 'husband', 'wife'],
+      health: ['sick', 'tired', 'exhausted', 'sleep', 'energy', 'pain', 'health'],
+      personal: ['myself', 'confidence', 'self', 'identity', 'future', 'goals', 'dreams']
+    };
+    
+    const getContext = () => {
+      if (emotionalWords.work.some(word => lowerMessage.includes(word))) return 'work';
+      if (emotionalWords.relationship.some(word => lowerMessage.includes(word))) return 'relationship';
+      if (emotionalWords.health.some(word => lowerMessage.includes(word))) return 'health';
+      if (emotionalWords.personal.some(word => lowerMessage.includes(word))) return 'personal';
+      return 'general';
+    };
+    
+    const context = getContext();
+    const hasStrongEmotion = emotionalWords.positive.some(word => lowerMessage.includes(word)) || 
+                            emotionalWords.negative.some(word => lowerMessage.includes(word));
+    
+    // Generate varied responses based on sentiment, context, and message characteristics
     if (sentiment === 'POSITIVE') {
-      if (lowerMessage.includes('happy') || lowerMessage.includes('good') || lowerMessage.includes('great')) {
-        return "That's wonderful to hear! It sounds like you're in a really good place right now. What's been contributing to these positive feelings? Sometimes it helps to reflect on the good moments so we can appreciate them fully.";
-      }
-      return "I'm so glad you're feeling positive! Your energy comes through in your message. It's beautiful when we can recognize and embrace these uplifting moments. What would you like to do to celebrate or maintain this good feeling?";
-    } else if (sentiment === 'NEGATIVE') {
-      if (lowerMessage.includes('sad') || lowerMessage.includes('upset')) {
-        return "I hear that you're going through a difficult time, and I want you to know that your feelings are completely valid. It's okay to feel sad - it shows how deeply you care. Would it help to talk about what's weighing on your heart, or would you prefer some gentle coping strategies?";
-      }
-      if (lowerMessage.includes('anxious') || lowerMessage.includes('worried')) {
-        return "It sounds like anxiety is weighing heavily on you right now. That can feel really overwhelming. Remember that you've gotten through difficult days before, and you have the strength to get through this too. Have you tried any breathing exercises or grounding techniques that help you feel more centered?";
-      }
-      return "I can sense that you're struggling with some difficult emotions. That takes courage to acknowledge and share. You're not alone in feeling this way - it's part of being human. What kind of support feels most helpful to you right now?";
-    } else {
-      if (lowerMessage.includes('tired') || lowerMessage.includes('exhausted')) {
-        return "It sounds like you might be feeling drained or overwhelmed. Sometimes when we're tired, it can be hard to connect with our emotions. That's completely normal. Are you getting enough rest, or is there something specific that's been draining your energy?";
-      }
-      return "Thank you for sharing with me. Sometimes our feelings can be complex or in between - not clearly positive or negative, and that's perfectly okay. How has your day been treating you? Is there anything specific you'd like to explore or talk through?";
+      const positiveResponses = [
+        `I love hearing the positivity in your message! ${messageLength > 50 ? "You've shared quite a bit, and" : ""} it really shows you're in a good headspace. What's been the highlight that's contributing to these good feelings?`,
+        `That's fantastic! Your enthusiasm really comes through. ${context === 'work' ? "It sounds like things are going well professionally." : context === 'relationship' ? "It's wonderful when our relationships bring us joy." : "These positive moments are so important to cherish."} How can you build on this momentum?`,
+        `I'm genuinely happy for you! ${hasStrongEmotion ? "The strong positive energy in your words is infectious." : "There's something special about recognizing our good moments."} What would you like to do to celebrate or maintain this feeling?`,
+        `What a wonderful message to receive! ${lowerMessage.includes('today') ? "It sounds like today has been treating you well." : "Your positive spirit really shines through."} Tell me more about what's bringing you this joy.`
+      ];
+      return positiveResponses[Math.floor(Math.random() * positiveResponses.length)];
+    } 
+    
+    else if (sentiment === 'NEGATIVE') {
+      const negativeResponses = [
+        `I can hear the weight in your words, and I want you to know that sharing difficult feelings takes real courage. ${context === 'work' ? "Work stress can be particularly draining." : context === 'relationship' ? "Relationship challenges can feel especially heavy on our hearts." : context === 'health' ? "When we're not feeling well physically, it affects everything else too." : "Whatever you're going through matters."} What feels most overwhelming right now?`,
+        `Thank you for trusting me with these difficult feelings. ${messageLength > 50 ? "I can tell you've put thought into sharing this with me." : "Even in few words, I can sense you're struggling."} You're not alone in feeling this way. What kind of support would feel most helpful?`,
+        `I hear you, and what you're experiencing is completely valid. ${hasStrongEmotion ? "These intense emotions can feel overwhelming." : "Sometimes the hardest part is just acknowledging these feelings."} ${context === 'personal' ? "Being hard on ourselves often makes things worse." : "Remember that difficult emotions are temporary, even when they don't feel that way."} How are you taking care of yourself through this?`,
+        `Your feelings matter, and I'm glad you felt comfortable sharing them here. ${lowerMessage.includes('lonely') || lowerMessage.includes('alone') ? "Feeling isolated can make everything seem harder." : lowerMessage.includes('tired') || lowerMessage.includes('exhausted') ? "Emotional exhaustion is real and valid." : "Difficult days are part of being human."} What's one small thing that might bring you a moment of comfort today?`
+      ];
+      return negativeResponses[Math.floor(Math.random() * negativeResponses.length)];
+    } 
+    
+    else {
+      const neutralResponses = [
+        `Thanks for sharing with me. ${messageLength > 30 ? "I appreciate you taking the time to express your thoughts." : "Sometimes fewer words say just as much."} ${context === 'work' ? "How are things going in your professional life?" : context === 'relationship' ? "How are your relationships feeling lately?" : "How has your day been treating you?"} I'm here to listen to whatever's on your mind.`,
+        `I'm here and listening. ${lowerMessage.includes('okay') || lowerMessage.includes('fine') ? "Sometimes 'okay' or 'fine' can mean a lot of different things underneath." : "It sounds like you might have mixed or complex feelings."} ${context === 'health' ? "How are you feeling physically and emotionally?" : "What's been occupying your thoughts lately?"} Feel free to share as much or as little as you'd like.`,
+        `Thank you for reaching out. ${messageLength < 20 ? "Sometimes it's hard to find the right words for how we're feeling." : "Your message gives me a sense of where you might be emotionally."} ${context === 'personal' ? "Self-reflection can be both enlightening and challenging." : "Whatever you're processing, you don't have to do it alone."} What would be most helpful to talk through right now?`,
+        `I'm glad you're here. ${lowerMessage.includes('confused') || lowerMessage.includes('mixed') ? "Confused or mixed feelings are completely normal." : "Sometimes our emotions exist in that in-between space."} ${context === 'general' ? "Is there anything specific on your mind, or are you just checking in with yourself?" : "What's been on your heart lately?"} I'm here to support you through whatever you're experiencing.`
+      ];
+      return neutralResponses[Math.floor(Math.random() * neutralResponses.length)];
     }
   };
 
-  const apiKey = Deno.env.get('HUGGINGFACE_API_KEY');
-  
-  // If no API key, use personalized responses
-  if (!apiKey) {
-    console.log('No API key found, using personalized fallback response');
-    return createPersonalizedResponse(userMessage, sentiment);
-  }
-
-  try {
-    console.log('Attempting to generate AI response for:', userMessage, 'with sentiment:', sentiment);
-    
-    const response = await fetch(
-      "https://api-inference.huggingface.co/models/microsoft/DialoGPT-medium",
-      {
-        headers: {
-          Authorization: `Bearer ${apiKey}`,
-          "Content-Type": "application/json",
-        },
-        method: "POST",
-        body: JSON.stringify({ 
-          inputs: userMessage,
-          parameters: {
-            max_length: 100,
-            temperature: 0.8,
-            do_sample: true,
-            pad_token_id: 50256
-          }
-        }),
-      }
-    );
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error(`Conversational API error: ${response.status} ${response.statusText}`, errorText);
-      return createPersonalizedResponse(userMessage, sentiment);
-    }
-
-    const result = await response.json();
-    console.log('Conversational API result:', result);
-    
-    const generatedText = result.generated_text || result[0]?.generated_text;
-    
-    if (!generatedText || generatedText.trim() === userMessage.trim()) {
-      console.log('No valid AI response, using personalized fallback');
-      return createPersonalizedResponse(userMessage, sentiment);
-    }
-
-    // Clean up the generated text to remove the input prompt
-    const cleanResponse = generatedText.replace(userMessage, '').trim();
-    return cleanResponse || createPersonalizedResponse(userMessage, sentiment);
-    
-  } catch (error) {
-    console.error('Conversational model error:', error);
-    return createPersonalizedResponse(userMessage, sentiment);
-  }
+  // Always use personalized responses for now since API is not working reliably
+  console.log("Generating personalized response for:", userMessage, "with sentiment:", sentiment);
+  return createPersonalizedResponse(userMessage, sentiment);
 };
 
 const mapSentimentToMood = (sentiment: string, score: number) => {
