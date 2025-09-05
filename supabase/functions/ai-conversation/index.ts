@@ -14,73 +14,96 @@ interface ConversationMessage {
 }
 
 const analyzeSentiment = async (text: string) => {
-  const response = await fetch(
-    "https://api-inference.huggingface.co/models/distilbert-base-uncased-finetuned-sst-2-english",
-    {
-      headers: {
-        Authorization: `Bearer ${Deno.env.get('HUGGINGFACE_API_KEY')}`,
-        "Content-Type": "application/json",
-      },
-      method: "POST",
-      body: JSON.stringify({ inputs: text }),
+  try {
+    const response = await fetch(
+      "https://api-inference.huggingface.co/models/distilbert-base-uncased-finetuned-sst-2-english",
+      {
+        headers: {
+          Authorization: `Bearer ${Deno.env.get('HUGGINGFACE_API_KEY')}`,
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+        body: JSON.stringify({ inputs: text }),
+      }
+    );
+
+    if (!response.ok) {
+      console.error(`Sentiment analysis API error: ${response.status} ${response.statusText}`);
+      // Return fallback sentiment analysis
+      return { label: "NEUTRAL", score: 0.5 };
     }
-  );
 
-  if (!response.ok) {
-    throw new Error(`Sentiment analysis failed: ${response.statusText}`);
+    const result = await response.json();
+    return result[0] || { label: "NEUTRAL", score: 0.5 };
+  } catch (error) {
+    console.error('Sentiment analysis error:', error);
+    // Return fallback sentiment analysis
+    return { label: "NEUTRAL", score: 0.5 };
   }
-
-  const result = await response.json();
-  return result[0]; // Returns { label: "POSITIVE" | "NEGATIVE", score: number }
 };
 
 const generateResponse = async (userMessage: string, sentiment: string) => {
-  // Create a context-aware prompt for the conversational model
-  const empathyPrompts = {
-    POSITIVE: "The user is feeling positive. Acknowledge their good mood and encourage them to maintain this positive energy.",
-    NEGATIVE: "The user is feeling down or negative. Provide empathetic support, validation, and gentle coping suggestions.",
-    NEUTRAL: "The user seems neutral. Gently encourage them to share more about their feelings and offer supportive guidance."
+  // Create fallback responses first
+  const fallbackResponses = {
+    POSITIVE: "I'm so glad to hear you're feeling good! It's wonderful when we can appreciate the positive moments in life. Keep nurturing this positive energy - maybe by doing something you enjoy or sharing your good mood with someone special.",
+    NEGATIVE: "I hear you, and I want you to know that what you're feeling is valid. Difficult emotions are part of being human, and it's okay to feel this way. Would it help to try some deep breathing, write down your thoughts, or reach out to someone you trust?",
+    NEUTRAL: "Thank you for sharing with me. Sometimes our feelings can be complex or hard to name. That's completely normal. Is there anything specific on your mind today, or would you like to talk about what's been happening in your life?"
   };
 
-  const contextPrompt = `You are a supportive AI companion for emotional well-being. ${empathyPrompts[sentiment as keyof typeof empathyPrompts]} 
+  try {
+    // Create a context-aware prompt for the conversational model
+    const empathyPrompts = {
+      POSITIVE: "The user is feeling positive. Acknowledge their good mood and encourage them to maintain this positive energy.",
+      NEGATIVE: "The user is feeling down or negative. Provide empathetic support, validation, and gentle coping suggestions.",
+      NEUTRAL: "The user seems neutral. Gently encourage them to share more about their feelings and offer supportive guidance."
+    };
+
+    const contextPrompt = `You are a supportive AI companion for emotional well-being. ${empathyPrompts[sentiment as keyof typeof empathyPrompts]} 
 
 User message: "${userMessage}"
 
 Respond with empathy, understanding, and helpful suggestions. Keep your response supportive, warm, and encouraging. Include emotional acknowledgment and practical coping suggestions when appropriate.`;
 
-  const response = await fetch(
-    "https://api-inference.huggingface.co/models/microsoft/DialoGPT-medium",
-    {
-      headers: {
-        Authorization: `Bearer ${Deno.env.get('HUGGINGFACE_API_KEY')}`,
-        "Content-Type": "application/json",
-      },
-      method: "POST",
-      body: JSON.stringify({ 
-        inputs: contextPrompt,
-        parameters: {
-          max_length: 200,
-          temperature: 0.7,
-          do_sample: true
-        }
-      }),
-    }
-  );
+    const response = await fetch(
+      "https://api-inference.huggingface.co/models/microsoft/DialoGPT-medium",
+      {
+        headers: {
+          Authorization: `Bearer ${Deno.env.get('HUGGINGFACE_API_KEY')}`,
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+        body: JSON.stringify({ 
+          inputs: contextPrompt,
+          parameters: {
+            max_length: 200,
+            temperature: 0.7,
+            do_sample: true
+          }
+        }),
+      }
+    );
 
-  if (!response.ok) {
-    // Fallback response if the conversational model fails
-    const fallbackResponses = {
-      POSITIVE: "I'm so glad to hear you're feeling good! It's wonderful when we can appreciate the positive moments in life. Keep nurturing this positive energy - maybe by doing something you enjoy or sharing your good mood with someone special.",
-      NEGATIVE: "I hear you, and I want you to know that what you're feeling is valid. Difficult emotions are part of being human, and it's okay to feel this way. Would it help to try some deep breathing, write down your thoughts, or reach out to someone you trust?",
-      NEUTRAL: "Thank you for sharing with me. Sometimes our feelings can be complex or hard to name. That's completely normal. Is there anything specific on your mind today, or would you like to talk about what's been happening in your life?"
-    };
+    if (!response.ok) {
+      console.error(`Conversational API error: ${response.status} ${response.statusText}`);
+      return fallbackResponses[sentiment as keyof typeof fallbackResponses] || 
+             "I'm here to listen and support you. How are you feeling right now, and is there anything you'd like to talk about?";
+    }
+
+    const result = await response.json();
+    const generatedText = result.generated_text || result[0]?.generated_text;
     
+    if (!generatedText) {
+      return fallbackResponses[sentiment as keyof typeof fallbackResponses] || 
+             "I'm here to support you. Can you tell me more about how you're feeling?";
+    }
+
+    return generatedText;
+    
+  } catch (error) {
+    console.error('Conversational model error:', error);
     return fallbackResponses[sentiment as keyof typeof fallbackResponses] || 
            "I'm here to listen and support you. How are you feeling right now, and is there anything you'd like to talk about?";
   }
-
-  const result = await response.json();
-  return result.generated_text || result[0]?.generated_text || "I'm here to support you. Can you tell me more about how you're feeling?";
 };
 
 const mapSentimentToMood = (sentiment: string, score: number) => {
