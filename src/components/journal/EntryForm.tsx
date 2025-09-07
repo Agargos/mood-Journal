@@ -102,7 +102,7 @@ export const EntryForm = () => {
               value={text}
               onChange={(e) => setText(e.target.value)}
               placeholder="How are you feeling today? What's on your mind?"
-              className="min-h-[120px]"
+              className="min-h-[100px] sm:min-h-[120px] text-sm sm:text-base"
               disabled={loading}
             />
             <div>

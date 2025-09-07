@@ -26,57 +26,57 @@ export const StatsCards = () => {
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-      <Card>
+    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+      <Card className="min-w-[140px] sm:min-w-0">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Total Entries</CardTitle>
-          <Calendar className="h-4 w-4 text-muted-foreground" />
+          <CardTitle className="text-xs sm:text-sm font-medium">Total Entries</CardTitle>
+          <Calendar className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{stats.totalEntries}</div>
+          <div className="text-lg sm:text-2xl font-bold">{stats.totalEntries}</div>
           <p className="text-xs text-muted-foreground">
-            Journal entries created
+            Journal entries
           </p>
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="min-w-[140px] sm:min-w-0">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">This Week</CardTitle>
-          <BarChart3 className="h-4 w-4 text-muted-foreground" />
+          <CardTitle className="text-xs sm:text-sm font-medium">This Week</CardTitle>
+          <BarChart3 className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{stats.thisWeek}</div>
+          <div className="text-lg sm:text-2xl font-bold">{stats.thisWeek}</div>
           <p className="text-xs text-muted-foreground">
-            Entries in the last 7 days
+            Last 7 days
           </p>
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="min-w-[140px] sm:min-w-0">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Avg Mood</CardTitle>
-          <TrendingUp className="h-4 w-4 text-muted-foreground" />
+          <CardTitle className="text-xs sm:text-sm font-medium">Avg Mood</CardTitle>
+          <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">
+          <div className="text-lg sm:text-2xl font-bold">
             {getSentimentLabel(stats.avgSentiment)}
           </div>
           <p className="text-xs text-muted-foreground">
-            Score: {(stats.avgSentiment * 100).toFixed(0)}%
+            {(stats.avgSentiment * 100).toFixed(0)}%
           </p>
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="min-w-[140px] sm:min-w-0">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Positive Days</CardTitle>
-          <Heart className="h-4 w-4 text-muted-foreground" />
+          <CardTitle className="text-xs sm:text-sm font-medium">Positive Days</CardTitle>
+          <Heart className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{stats.positiveEntries}</div>
+          <div className="text-lg sm:text-2xl font-bold">{stats.positiveEntries}</div>
           <p className="text-xs text-muted-foreground">
-            Positive sentiment entries
+            Positive entries
           </p>
         </CardContent>
       </Card>

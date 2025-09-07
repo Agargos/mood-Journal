@@ -17,7 +17,29 @@ export default {
 				'2xl': '1400px'
 			}
 		},
+		screens: {
+			'xs': '360px',
+			'sm': '481px',
+			'md': '768px',
+			'lg': '1025px',
+			'xl': '1280px',
+			'2xl': '1440px',
+		},
 		extend: {
+			fontSize: {
+				'xs': ['0.75rem', { lineHeight: '1rem' }],
+				'sm': ['0.875rem', { lineHeight: '1.25rem' }],
+				'base': ['1rem', { lineHeight: '1.5rem' }],
+				'lg': ['1.125rem', { lineHeight: '1.75rem' }],
+				'xl': ['1.25rem', { lineHeight: '1.75rem' }],
+				'2xl': ['1.5rem', { lineHeight: '2rem' }],
+				'3xl': ['1.875rem', { lineHeight: '2.25rem' }],
+				'4xl': ['2.25rem', { lineHeight: '2.5rem' }],
+				'responsive-sm': 'clamp(0.875rem, 2.5vw, 1rem)',
+				'responsive-base': 'clamp(1rem, 3vw, 1.125rem)',
+				'responsive-lg': 'clamp(1.125rem, 4vw, 1.5rem)',
+				'responsive-xl': 'clamp(1.25rem, 5vw, 2rem)',
+			},
 			colors: {
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
@@ -95,6 +117,10 @@ export default {
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out'
+			},
+			spacing: {
+				'18': '4.5rem',
+				'88': '22rem',
 			}
 		}
 	},

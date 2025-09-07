@@ -14,8 +14,8 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { usePremium } from '@/hooks/usePremium';
 import { useMotivationalQuotes } from '@/hooks/useMotivationalQuotes';
-import { useNavigate } from 'react-router-dom';
-import { MessageCircle, Trophy, BarChart3 } from 'lucide-react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { MessageCircle, Trophy, BarChart3, User, BookOpen } from 'lucide-react';
 import React, { useEffect } from 'react';
 
 const Index = () => {
@@ -23,6 +23,7 @@ const Index = () => {
   const { isPremium } = usePremium();
   const { quote } = useMotivationalQuotes();
   const navigate = useNavigate();
+  const location = useLocation();
 
 
   if (loading) {
@@ -40,9 +41,97 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
-      <div className="max-w-6xl mx-auto p-6">
-        <div className="space-y-6">
-          {/* Welcome Section */}
+      
+      {/* Mobile Layout (≤480px) */}
+      <div className="block sm:hidden">
+        <div className="px-4 pt-6 pb-20 space-y-6">
+          {/* Welcome Section - Mobile */}
+          <div className="text-center">
+            <h2 className="text-2xl font-bold mb-2">Welcome back!</h2>
+            <p className="text-sm text-muted-foreground">
+              How are you feeling today?
+            </p>
+          </div>
+
+          {/* Mood Input - Mobile Priority */}
+          <EntryForm />
+          
+          {/* AI Chat Button - Mobile Priority */}
+          <Button 
+            onClick={() => navigate('/ai-chat')}
+            className="w-full"
+            size="lg"
+            variant="secondary"
+          >
+            <MessageCircle className="mr-2 h-4 w-4" />
+            Talk to AI
+          </Button>
+
+          {/* Stats Cards - Mobile Scrollable */}
+          <div className="overflow-x-auto">
+            <div className="flex gap-4 pb-2 min-w-max">
+              <StatsCards />
+            </div>
+          </div>
+
+          {/* Streak Counter */}
+          <StreakCounter />
+
+          {/* Motivational Quote */}
+          {isPremium && quote && (
+            <MotivationalQuote quote={quote} />
+          )}
+
+          {/* Journal Entries */}
+          <EntryList />
+        </div>
+
+        {/* Mobile Bottom Navigation */}
+        <div className="fixed bottom-0 left-0 right-0 bg-background border-t p-4">
+          <div className="grid grid-cols-4 gap-2">
+            <Button
+              variant={location.pathname === '/' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => navigate('/')}
+              className="flex flex-col gap-1 h-auto py-2"
+            >
+              <BookOpen className="h-4 w-4" />
+              <span className="text-xs">Home</span>
+            </Button>
+            <Button
+              variant={location.pathname === '/challenges' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => navigate('/challenges')}
+              className="flex flex-col gap-1 h-auto py-2"
+            >
+              <Trophy className="h-4 w-4" />
+              <span className="text-xs">Challenges</span>
+            </Button>
+            <Button
+              variant={location.pathname === '/emotion-tracking' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => navigate('/emotion-tracking')}
+              className="flex flex-col gap-1 h-auto py-2"
+            >
+              <BarChart3 className="h-4 w-4" />
+              <span className="text-xs">Analytics</span>
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="flex flex-col gap-1 h-auto py-2"
+            >
+              <User className="h-4 w-4" />
+              <span className="text-xs">Profile</span>
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Tablet Layout (481px–1024px) */}
+      <div className="hidden sm:block lg:hidden">
+        <div className="max-w-4xl mx-auto px-6 pt-6 space-y-6">
+          {/* Welcome Section - Tablet */}
           <div className="text-center">
             <h2 className="text-3xl font-bold mb-2">Welcome back!</h2>
             <p className="text-muted-foreground">
@@ -53,17 +142,107 @@ const Index = () => {
           {/* Stats Cards */}
           <StatsCards />
 
-          {/* Main Content Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Left Column - Journal Entry */}
-            <div className="lg:col-span-2 space-y-6">
+          {/* Two Column Layout for Tablet */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Left Side - Input & AI */}
+            <div className="space-y-6">
               <EntryForm />
-              <EntryList />
+              
+              <div className="grid grid-cols-2 gap-4">
+                <Button 
+                  onClick={() => navigate('/ai-chat')}
+                  className="w-full"
+                  size="lg"
+                  variant="secondary"
+                >
+                  <MessageCircle className="mr-2 h-4 w-4" />
+                  AI Chat
+                </Button>
+                
+                <Button 
+                  onClick={() => navigate('/challenges')} 
+                  className="w-full"
+                  size="lg"
+                >
+                  <Trophy className="mr-2 h-4 w-4" />
+                  Challenges
+                </Button>
+              </div>
             </div>
             
-            {/* Right Column - Dashboard & Gamification */}
-            <div className="lg:col-span-1 space-y-6">
+            {/* Right Side - Analytics & Streak */}
+            <div className="space-y-6">
+              <MoodForecast />
+              <StreakCounter />
               <ActiveChallenges />
+              {!isPremium && <PremiumUpgrade />}
+              {isPremium && quote && (
+                <MotivationalQuote quote={quote} />
+              )}
+            </div>
+          </div>
+
+          {/* Journal Entries - Full Width */}
+          <div className="space-y-6">
+            <h3 className="text-xl font-semibold">Recent Entries</h3>
+            <EntryList />
+          </div>
+        </div>
+      </div>
+
+      {/* Desktop Layout (≥1025px) */}
+      <div className="hidden lg:block">
+        <div className="max-w-7xl mx-auto px-8 pt-6 space-y-6">
+          {/* Welcome Section - Desktop */}
+          <div className="text-center">
+            <h2 className="text-4xl font-bold mb-3">Welcome back!</h2>
+            <p className="text-lg text-muted-foreground">
+              How are you feeling today? Share your thoughts and track your emotional journey.
+            </p>
+          </div>
+
+          {/* Stats Cards - Full Width */}
+          <StatsCards />
+
+          {/* Three Column Desktop Layout */}
+          <div className="grid grid-cols-12 gap-8">
+            {/* Left Sidebar (25% - 3 columns) */}
+            <div className="col-span-3 space-y-6">
+              <StreakCounter />
+              
+              <div className="space-y-4">
+                <Button 
+                  onClick={() => navigate('/challenges')} 
+                  className="w-full"
+                  size="lg"
+                >
+                  <Trophy className="mr-2 h-4 w-4" />
+                  Challenge Center
+                </Button>
+                
+                <Button 
+                  onClick={() => navigate('/emotion-tracking')} 
+                  className="w-full"
+                  size="lg"
+                  variant="outline"
+                >
+                  <BarChart3 className="mr-2 h-4 w-4" />
+                  Analytics
+                </Button>
+              </div>
+
+              <ActiveChallenges />
+              
+              {isPremium && quote && (
+                <MotivationalQuote quote={quote} />
+              )}
+              
+              {!isPremium && <PremiumUpgrade />}
+            </div>
+            
+            {/* Main Content (50% - 6 columns) */}
+            <div className="col-span-6 space-y-6">
+              <EntryForm />
               
               <Button 
                 onClick={() => navigate('/ai-chat')}
@@ -75,39 +254,43 @@ const Index = () => {
                 AI Mood Support
               </Button>
               
-              <Button 
-                onClick={() => navigate('/challenges')} 
-                className="w-full"
-                size="lg"
-              >
-                <Trophy className="mr-2 h-4 w-4" />
-                Challenge Center
-              </Button>
-              
-              <Button 
-                onClick={() => navigate('/emotion-tracking')} 
-                className="w-full"
-                size="lg"
-                variant="outline"
-              >
-                <BarChart3 className="mr-2 h-4 w-4" />
-                7-Day Emotion Tracking
-              </Button>
-              <StreakCounter />
-              {!isPremium && <PremiumUpgrade />}
-              {isPremium && quote && (
-                <MotivationalQuote quote={quote} />
-              )}
-              <ExportButtons />
+              <div className="space-y-4">
+                <h3 className="text-xl font-semibold">Recent Journal Entries</h3>
+                <EntryList />
+              </div>
             </div>
-          </div>
-
-          {/* Enhanced Analytics Section */}
-          <div className="space-y-6">
-            <h2 className="text-2xl font-semibold">Analytics & Insights</h2>
             
-            {/* Mood Forecast - New AI feature */}
-            <MoodForecast />
+            {/* Right Sidebar (25% - 3 columns) */}
+            <div className="col-span-3 space-y-6">
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">Analytics & Insights</h3>
+                <MoodForecast />
+              </div>
+              
+              <ExportButtons />
+              
+              <div className="p-4 rounded-lg bg-card border">
+                <h4 className="font-medium mb-2">Quick Actions</h4>
+                <div className="space-y-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="w-full justify-start"
+                    onClick={() => navigate('/emotion-tracking')}
+                  >
+                    View Detailed Analytics
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="w-full justify-start"
+                    onClick={() => navigate('/challenges')}
+                  >
+                    Browse Challenges
+                  </Button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

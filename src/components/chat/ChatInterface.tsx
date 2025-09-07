@@ -128,16 +128,16 @@ export const ChatInterface = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-4">
-      <Card className="h-[600px] flex flex-col">
-        <CardHeader className="flex-shrink-0">
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="flex items-center gap-2">
-                <Bot className="h-5 w-5 text-primary" />
-                AI Mood Support Chat
+    <div className="w-full">
+      <Card className="h-[calc(100vh-8rem)] sm:h-[600px] lg:h-[700px] flex flex-col">
+        <CardHeader className="flex-shrink-0 p-4 sm:p-6">
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <div className="min-w-0 flex-1">
+              <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
+                <Bot className="h-5 w-5 text-primary flex-shrink-0" />
+                <span className="truncate">AI Mood Support Chat</span>
               </CardTitle>
-              <p className="text-sm text-muted-foreground mt-1">
+              <p className="text-xs sm:text-sm text-muted-foreground mt-1">
                 Share your feelings and get empathetic AI support
               </p>
             </div>
@@ -146,10 +146,10 @@ export const ChatInterface = () => {
                 variant="outline" 
                 size="sm" 
                 onClick={clearConversation}
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 flex-shrink-0"
               >
                 <Trash2 className="h-4 w-4" />
-                Clear Chat
+                <span className="hidden sm:inline">Clear Chat</span>
               </Button>
             )}
           </div>
@@ -157,7 +157,7 @@ export const ChatInterface = () => {
 
         <CardContent className="flex-1 flex flex-col p-0">
           {/* Disclaimer */}
-          <div className="px-6 pb-4">
+          <div className="px-4 sm:px-6 pb-4">
             <Alert>
               <AlertCircle className="h-4 w-4" />
               <AlertDescription className="text-xs">
@@ -167,38 +167,38 @@ export const ChatInterface = () => {
           </div>
 
           {/* Messages */}
-          <ScrollArea ref={scrollAreaRef} className="flex-1 px-6">
-            <div className="space-y-4 pb-4">
+          <ScrollArea ref={scrollAreaRef} className="flex-1 px-4 sm:px-6">
+            <div className="space-y-3 sm:space-y-4 pb-4">
               {messages.length === 0 && (
                 <div className="text-center text-muted-foreground py-8">
-                  <Bot className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <p>Start a conversation about how you're feeling today</p>
+                  <Bot className="h-8 w-8 sm:h-12 sm:w-12 mx-auto mb-4 opacity-50" />
+                  <p className="text-sm sm:text-base">Start a conversation about how you're feeling today</p>
                 </div>
               )}
               
               {messages.map((message) => (
                 <div
                   key={message.id}
-                  className={`flex gap-3 ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                  className={`flex gap-2 sm:gap-3 ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
                   {message.role === 'assistant' && (
                     <div className="flex-shrink-0">
-                      <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                        <Bot className="h-4 w-4 text-primary" />
+                      <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                        <Bot className="h-3 w-3 sm:h-4 sm:w-4 text-primary" />
                       </div>
                     </div>
                   )}
                   
-                  <div className={`max-w-[80%] ${message.role === 'user' ? 'order-2' : ''}`}>
-                    <div className={`p-3 rounded-lg ${
+                  <div className={`max-w-[85%] sm:max-w-[80%] ${message.role === 'user' ? 'order-2' : ''}`}>
+                    <div className={`p-2 sm:p-3 rounded-lg ${
                       message.role === 'user' 
                         ? 'bg-primary text-primary-foreground ml-auto' 
                         : 'bg-muted'
                     }`}>
-                      <p className="text-sm leading-relaxed">{message.content}</p>
+                      <p className="text-xs sm:text-sm leading-relaxed break-words">{message.content}</p>
                     </div>
                     
-                    <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
+                    <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground flex-wrap">
                       <span>{new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                       {message.sentiment && (
                         <Badge variant="secondary" className={`${getSentimentColor(message.sentiment)} text-white text-xs`}>
@@ -210,8 +210,8 @@ export const ChatInterface = () => {
 
                   {message.role === 'user' && (
                     <div className="flex-shrink-0 order-3">
-                      <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
-                        <User className="h-4 w-4 text-primary-foreground" />
+                      <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-primary flex items-center justify-center">
+                        <User className="h-3 w-3 sm:h-4 sm:w-4 text-primary-foreground" />
                       </div>
                     </div>
                   )}
@@ -219,17 +219,17 @@ export const ChatInterface = () => {
               ))}
               
               {isLoading && (
-                <div className="flex gap-3 justify-start">
+                <div className="flex gap-2 sm:gap-3 justify-start">
                   <div className="flex-shrink-0">
-                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                      <Bot className="h-4 w-4 text-primary animate-pulse" />
+                    <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                      <Bot className="h-3 w-3 sm:h-4 sm:w-4 text-primary animate-pulse" />
                     </div>
                   </div>
-                  <div className="bg-muted p-3 rounded-lg">
+                  <div className="bg-muted p-2 sm:p-3 rounded-lg">
                     <div className="flex space-x-1">
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                      <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                      <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                      <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                     </div>
                   </div>
                 </div>
@@ -238,7 +238,7 @@ export const ChatInterface = () => {
           </ScrollArea>
 
           {/* Input */}
-          <div className="border-t p-4">
+          <div className="border-t p-3 sm:p-4">
             <div className="flex gap-2">
               <Input
                 value={inputMessage}
@@ -246,12 +246,13 @@ export const ChatInterface = () => {
                 onKeyPress={handleKeyPress}
                 placeholder="How are you feeling today?"
                 disabled={isLoading}
-                className="flex-1"
+                className="flex-1 text-sm sm:text-base"
               />
               <Button 
                 onClick={sendMessage} 
                 disabled={!inputMessage.trim() || isLoading}
                 size="sm"
+                className="px-3 sm:px-4"
               >
                 <Send className="h-4 w-4" />
               </Button>

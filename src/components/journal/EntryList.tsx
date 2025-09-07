@@ -120,14 +120,14 @@ export const EntryList = () => {
         )}
       </CardHeader>
       <CardContent>
-        <div className="space-y-4 max-h-[400px] overflow-y-auto">
+        <div className="space-y-3 max-h-[400px] lg:max-h-[600px] overflow-y-auto">
           {filteredEntries.map((entry: JournalEntry) => (
-            <div key={entry.id} className="border rounded-lg p-4 hover:bg-muted/50 transition-colors">
+            <div key={entry.id} className="border rounded-lg p-3 sm:p-4 hover:bg-muted/50 transition-colors">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Clock className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm text-muted-foreground">
+                  <div className="flex items-center gap-2 mb-2 flex-wrap">
+                    <Clock className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
+                    <span className="text-xs sm:text-sm text-muted-foreground">
                       {formatDate(entry.created_at)}
                     </span>
                     {entry.sentiment && (
@@ -136,24 +136,29 @@ export const EntryList = () => {
                       </Badge>
                     )}
                     {entry.score && (
-                      <span className="text-xs text-muted-foreground">
+                      <span className="text-xs text-muted-foreground hidden sm:inline">
                         {(entry.score * 100).toFixed(0)}% confidence
                       </span>
                     )}
                   </div>
-                  <p className="text-sm line-clamp-3">
-                    {entry.text.length > 200 
-                      ? entry.text.substring(0, 200) + '...'
+                  <p className="text-sm sm:text-base line-clamp-3">
+                    {entry.text.length > 150 
+                      ? entry.text.substring(0, 150) + '...'
                       : entry.text
                     }
                   </p>
                   {entry.tags && entry.tags.length > 0 && (
                     <div className="flex gap-1 flex-wrap mt-2">
-                      {entry.tags.map((tag) => (
+                      {entry.tags.slice(0, 3).map((tag) => (
                         <Badge key={tag} variant="outline" className="text-xs">
                           {tag}
                         </Badge>
                       ))}
+                      {entry.tags.length > 3 && (
+                        <Badge variant="outline" className="text-xs">
+                          +{entry.tags.length - 3}
+                        </Badge>
+                      )}
                     </div>
                   )}
                 </div>
