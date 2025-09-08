@@ -47,9 +47,10 @@ export const Navigation = () => {
               Mood Journal
             </h1>
             {isPremium && (
-              <Badge variant="secondary" className="hidden sm:flex bg-primary/20 text-primary border-primary/30">
+              <Badge variant="secondary" className="flex bg-primary/20 text-primary border-primary/30">
                 <Crown className="h-3 w-3 mr-1" />
-                Premium
+                <span className="hidden sm:inline">Premium</span>
+                <span className="sm:hidden">Pro</span>
               </Badge>
             )}
           </div>

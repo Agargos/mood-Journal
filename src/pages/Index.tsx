@@ -15,14 +15,24 @@ import { useAuth } from '@/hooks/useAuth';
 import { usePremium } from '@/hooks/usePremium';
 import { useMotivationalQuotes } from '@/hooks/useMotivationalQuotes';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { MessageCircle, Trophy, BarChart3, User, BookOpen } from 'lucide-react';
+import { MessageCircle, Trophy, BarChart3, User, BookOpen, Crown, LogOut } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import React, { useEffect } from 'react';
 
 const Index = () => {
-  const { user, loading } = useAuth();
+  const { user, loading, signOut } = useAuth();
   const { isPremium } = usePremium();
   const { quote } = useMotivationalQuotes();
   const navigate = useNavigate();
+  const handleSignOut = async () => {
+    await signOut();
+  };
   const location = useLocation();
 
 
@@ -116,14 +126,45 @@ const Index = () => {
               <BarChart3 className="h-4 w-4" />
               <span className="text-xs">Analytics</span>
             </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="flex flex-col gap-1 h-auto py-2"
-            >
-              <User className="h-4 w-4" />
-              <span className="text-xs">Profile</span>
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="flex flex-col gap-1 h-auto py-2 relative"
+                >
+                  <User className="h-4 w-4" />
+                  <span className="text-xs">Profile</span>
+                  {isPremium && (
+                    <Crown className="absolute -top-1 -right-1 h-3 w-3 text-primary" />
+                  )}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                {isPremium && (
+                  <>
+                    <DropdownMenuItem className="text-primary font-medium">
+                      <Crown className="mr-2 h-4 w-4" />
+                      Premium Member
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                  </>
+                )}
+                <DropdownMenuItem onClick={() => navigate('/emotion-tracking')}>
+                  <BarChart3 className="mr-2 h-4 w-4" />
+                  View Analytics
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate('/challenges')}>
+                  <Trophy className="mr-2 h-4 w-4" />
+                  Challenges
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleSignOut} className="text-destructive">
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Sign Out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </div>
