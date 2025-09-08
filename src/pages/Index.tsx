@@ -23,7 +23,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { DebugPremium } from '@/components/test/DebugPremium';
 import React, { useEffect } from 'react';
 
 const Index = () => {
@@ -55,7 +54,6 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <DebugPremium />
       <Navigation />
       
       {/* Mobile Layout (≤480px) */}
@@ -92,6 +90,13 @@ const Index = () => {
 
           {/* Streak Counter */}
           <StreakCounter />
+
+          {/* Premium Upgrade Section - Mobile */}
+          {!isPremium && (
+            <div data-premium-upgrade className="mb-6">
+              <PremiumUpgrade />
+            </div>
+          )}
 
           {/* Motivational Quote */}
           {isPremium && quote && (
@@ -161,7 +166,19 @@ const Index = () => {
                   </>
                 ) : (
                   <>
-                    <DropdownMenuItem onClick={() => navigate('/')} className="text-muted-foreground">
+                    <DropdownMenuItem 
+                      onClick={() => {
+                        // Scroll to premium upgrade section on mobile
+                        const premiumSection = document.querySelector('[data-premium-upgrade]');
+                        if (premiumSection) {
+                          premiumSection.scrollIntoView({ behavior: 'smooth' });
+                        } else {
+                          // If no premium section visible, navigate to main page where it should be
+                          navigate('/');
+                        }
+                      }} 
+                      className="text-amber-600 font-medium"
+                    >
                       <Crown className="mr-2 h-4 w-4" />
                       Upgrade to Premium
                     </DropdownMenuItem>
