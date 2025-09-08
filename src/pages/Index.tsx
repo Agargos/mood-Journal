@@ -23,12 +23,17 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { DebugPremium } from '@/components/test/DebugPremium';
 import React, { useEffect } from 'react';
 
 const Index = () => {
   const { user, loading, signOut } = useAuth();
   const { isPremium } = usePremium();
   const { quote } = useMotivationalQuotes();
+  
+  // Debug logging
+  console.log('User premium status:', isPremium);
+  console.log('User:', user?.email);
   const navigate = useNavigate();
   const handleSignOut = async () => {
     await signOut();
@@ -50,6 +55,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <DebugPremium />
       <Navigation />
       
       {/* Mobile Layout (≤480px) */}
@@ -140,12 +146,24 @@ const Index = () => {
                   )}
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
-                {isPremium && (
+              <DropdownMenuContent 
+                align="end" 
+                className="z-[100] w-48 bg-background border border-border shadow-lg"
+                style={{ backgroundColor: 'hsl(var(--background))', border: '1px solid hsl(var(--border))' }}
+              >
+                {isPremium ? (
                   <>
-                    <DropdownMenuItem className="text-primary font-medium">
+                    <DropdownMenuItem className="text-primary font-medium pointer-events-none">
                       <Crown className="mr-2 h-4 w-4" />
                       Premium Member
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                  </>
+                ) : (
+                  <>
+                    <DropdownMenuItem onClick={() => navigate('/')} className="text-muted-foreground">
+                      <Crown className="mr-2 h-4 w-4" />
+                      Upgrade to Premium
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                   </>
