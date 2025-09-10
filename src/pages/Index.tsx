@@ -154,11 +154,12 @@ const Index = () => {
               <DropdownMenuContent 
                 align="end" 
                 className="z-[9999] w-48"
-                sideOffset={5}
+                side="top"
+                sideOffset={8}
               >
                 {isPremium ? (
                   <>
-                    <DropdownMenuItem className="text-primary font-medium pointer-events-none">
+                    <DropdownMenuItem className="text-primary font-medium focus:bg-transparent focus:text-primary" disabled>
                       <Crown className="mr-2 h-4 w-4" />
                       Premium Member
                     </DropdownMenuItem>
@@ -167,17 +168,14 @@ const Index = () => {
                 ) : (
                   <>
                     <DropdownMenuItem 
-                      onClick={() => {
-                        // Scroll to premium upgrade section on mobile
+                      onClick={(e) => {
+                        e.preventDefault();
                         const premiumSection = document.querySelector('[data-premium-upgrade]');
                         if (premiumSection) {
                           premiumSection.scrollIntoView({ behavior: 'smooth' });
-                        } else {
-                          // If no premium section visible, navigate to main page where it should be
-                          navigate('/');
                         }
                       }} 
-                      className="text-amber-600 font-medium cursor-pointer"
+                      className="text-amber-600 font-medium"
                     >
                       <Crown className="mr-2 h-4 w-4" />
                       Upgrade to Premium
