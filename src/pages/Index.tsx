@@ -153,8 +153,8 @@ const Index = () => {
               </DropdownMenuTrigger>
               <DropdownMenuContent 
                 align="end" 
-                className="z-[100] w-48 bg-background border border-border shadow-lg"
-                style={{ backgroundColor: 'hsl(var(--background))', border: '1px solid hsl(var(--border))' }}
+                className="z-[9999] w-48"
+                sideOffset={5}
               >
                 {isPremium ? (
                   <>
@@ -177,7 +177,7 @@ const Index = () => {
                           navigate('/');
                         }
                       }} 
-                      className="text-amber-600 font-medium"
+                      className="text-amber-600 font-medium cursor-pointer"
                     >
                       <Crown className="mr-2 h-4 w-4" />
                       Upgrade to Premium
@@ -185,16 +185,16 @@ const Index = () => {
                     <DropdownMenuSeparator />
                   </>
                 )}
-                <DropdownMenuItem onClick={() => navigate('/emotion-tracking')}>
+                <DropdownMenuItem onClick={() => navigate('/emotion-tracking')} className="cursor-pointer">
                   <BarChart3 className="mr-2 h-4 w-4" />
                   View Analytics
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate('/challenges')}>
+                <DropdownMenuItem onClick={() => navigate('/challenges')} className="cursor-pointer">
                   <Trophy className="mr-2 h-4 w-4" />
                   Challenges
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleSignOut} className="text-destructive">
+                <DropdownMenuItem onClick={handleSignOut} className="text-destructive cursor-pointer">
                   <LogOut className="mr-2 h-4 w-4" />
                   Sign Out
                 </DropdownMenuItem>
